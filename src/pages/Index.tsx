@@ -56,7 +56,7 @@ const Index = () => {
           
           <Link to="/" className="flex flex-col items-center">
             <div className="rounded-full bg-green-500 w-14 h-14 flex items-center justify-center -mt-6 border-4 border-white dark:border-gray-800">
-              <Camera size={24} />
+              <Camera className="w-6 h-6 text-white" />
             </div>
             <span className="text-xs mt-1 text-gray-600 dark:text-gray-400">촬영</span>
           </Link>
