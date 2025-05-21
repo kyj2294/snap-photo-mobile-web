@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Prediction } from "@/hooks/useImageClassifier";
 import { MapPin, AlertCircle, Recycle, Building } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface PredictionResultsProps {
   prediction: Prediction[] | null;
@@ -14,11 +15,13 @@ interface RecyclingCenter {
   positnNm: string;
   positnRdnmAddr?: string;
   bscTelnoCn?: string;
+  clctItemCn?: string; // 수거 가능 품목 정보 추가
 }
 
 const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => {
   const [recyclingCenters, setRecyclingCenters] = useState<RecyclingCenter[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (prediction && prediction.length > 0) {
@@ -29,19 +32,48 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
           const sortedPredictions = [...prediction].sort((a, b) => b.probability - a.probability);
           const topPrediction = sortedPredictions[0];
           
-          // 볼펜인 경우 특별한 쿼리 사용
-          const isSpecificItem = topPrediction.className === "볼펜";
-          
-          // 쿼리 실행
-          const { data, error } = await supabase
+          // 예측 결과에 따라 필터링 조건 설정
+          let query = supabase
             .from('renewalcenter')
-            .select('objID, positnNm, positnRdnmAddr, bscTelnoCn')
-            .limit(isSpecificItem ? 5 : 3);
+            .select('objID, positnNm, positnRdnmAddr, bscTelnoCn, clctItemCn');
+          
+          // 분석 결과에 따라 필터링
+          if (topPrediction.className === "볼펜") {
+            // 볼펜인 경우 특정 ObjID를 가진 센터 또는 clctItemCn에 '볼펜' 또는 '필기구'가 포함된 센터 찾기
+            query = query
+              .or(`clctItemCn.ilike.%볼펜%,clctItemCn.ilike.%필기구%`);
+          } else if (topPrediction.className === "커피컵") {
+            query = query
+              .or(`clctItemCn.ilike.%커피컵%,clctItemCn.ilike.%종이컵%,clctItemCn.ilike.%일회용컵%`);
+          } else if (topPrediction.className === "종이컵") {
+            query = query
+              .or(`clctItemCn.ilike.%종이컵%,clctItemCn.ilike.%일회용컵%,clctItemCn.ilike.%종이%`);
+          }
+
+          // 최대 결과 개수 제한
+          const limit = topPrediction.className === "볼펜" ? 5 : 3;
+          query = query.limit(limit);
+            
+          const { data, error } = await query;
             
           if (error) {
             console.error('재활용 센터 정보 조회 오류:', error);
+            toast({
+              title: "데이터 조회 오류",
+              description: "재활용 센터 정보를 불러올 수 없습니다.",
+              variant: "destructive"
+            });
           } else if (data) {
             setRecyclingCenters(data);
+            
+            // 검색 결과가 없으면 토스트 메시지 표시
+            if (data.length === 0) {
+              toast({
+                title: "검색 결과 없음",
+                description: `'${topPrediction.className}'에 대한 재활용 센터를 찾을 수 없습니다.`,
+                variant: "default"
+              });
+            }
           }
         } catch (error) {
           console.error('재활용 센터 데이터 요청 실패:', error);
@@ -159,10 +191,15 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
               {recyclingCenters.map((center) => (
                 <li key={center.objID} className="border-b border-gray-200 dark:border-gray-700 pb-2 last:border-0">
                   <div className="font-semibold text-lg text-green-700 dark:text-green-500">
-                    {center.positnNm} 
+                    {center.positnNm || "이름 없는 센터"} 
                     {isItemPen && <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">볼펜 전문 수거</span>}
                   </div>
                   <div className="text-xs text-gray-500 mt-0.5">ID: {center.objID}</div>
+                  {center.clctItemCn && (
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 italic">
+                      <span className="font-medium">수거품목:</span> {center.clctItemCn}
+                    </div>
+                  )}
                   {center.positnRdnmAddr && (
                     <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center mt-1">
                       <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
@@ -179,7 +216,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
             </ul>
           ) : (
             <p className="text-gray-600 dark:text-gray-400 text-center py-2">
-              등록된 재활용 센터 정보가 없습니다.
+              '{topPrediction.className}'에 대한 재활용 센터 정보가 없습니다.
             </p>
           )}
         </div>
