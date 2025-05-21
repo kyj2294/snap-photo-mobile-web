@@ -1,12 +1,21 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from 'react';
+import Camera from '@/components/Camera';
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen flex flex-col bg-gray-100">
+      <header className="bg-blue-500 text-white p-4 text-center">
+        <h1 className="text-2xl font-bold">모바일 카메라 앱</h1>
+      </header>
+      
+      <main className="flex-1 flex flex-col items-center justify-center p-4">
+        <Camera />
+      </main>
+      
+      <footer className="text-center p-4 text-sm text-gray-500">
+        © 2025 카메라 앱
+      </footer>
     </div>
   );
 };
