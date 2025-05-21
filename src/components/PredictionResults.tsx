@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import { Prediction } from "@/hooks/useImageClassifier";
 import { MapPin, AlertCircle, Recycle, Building } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 interface PredictionResultsProps {
   prediction: Prediction[] | null;
@@ -19,6 +21,7 @@ interface RecyclingCenter {
 const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => {
   const [recyclingCenters, setRecyclingCenters] = useState<RecyclingCenter[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (prediction && prediction.length > 0) {
@@ -40,6 +43,11 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
             
           if (error) {
             console.error('재활용 센터 정보 조회 오류:', error);
+            toast({
+              variant: "destructive",
+              title: "조회 실패",
+              description: "재활용 센터 정보를 불러오는데 문제가 발생했습니다."
+            });
           } else if (data) {
             setRecyclingCenters(data);
           }
@@ -159,8 +167,12 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
               {recyclingCenters.map((center) => (
                 <li key={center.objID} className="border-b border-gray-200 dark:border-gray-700 pb-2 last:border-0">
                   <div className="font-semibold text-lg text-green-700 dark:text-green-500">
-                    {center.positnNm} 
-                    {isItemPen && <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">볼펜 전문 수거</span>}
+                    {center.positnNm || "이름 없는 센터"} 
+                    {isItemPen && (
+                      <Badge variant="outline" className="ml-2 bg-green-100 text-green-800 border-green-200">
+                        볼펜 전문 수거
+                      </Badge>
+                    )}
                   </div>
                   <div className="text-xs text-gray-500 mt-0.5">ID: {center.objID}</div>
                   {center.positnRdnmAddr && (
@@ -179,7 +191,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
             </ul>
           ) : (
             <p className="text-gray-600 dark:text-gray-400 text-center py-2">
-              등록된 재활용 센터 정보가 없습니다.
+              {isItemPen ? "볼펜 수거 가능한 재활용 센터를 찾을 수 없습니다." : "등록된 재활용 센터 정보가 없습니다."}
             </p>
           )}
         </div>
