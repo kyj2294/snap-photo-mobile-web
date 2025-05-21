@@ -165,6 +165,7 @@ export type Database = {
         Row: {
           admin_yn: boolean | null
           created_at: string
+          last_login_dtm: string | null
           use_yn: boolean | null
           user_id: string
           user_pass: string | null
@@ -172,6 +173,7 @@ export type Database = {
         Insert: {
           admin_yn?: boolean | null
           created_at?: string
+          last_login_dtm?: string | null
           use_yn?: boolean | null
           user_id: string
           user_pass?: string | null
@@ -179,6 +181,7 @@ export type Database = {
         Update: {
           admin_yn?: boolean | null
           created_at?: string
+          last_login_dtm?: string | null
           use_yn?: boolean | null
           user_id?: string
           user_pass?: string | null

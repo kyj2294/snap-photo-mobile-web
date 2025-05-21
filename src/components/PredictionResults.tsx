@@ -158,7 +158,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
             <ul className="space-y-3">
               {recyclingCenters.map((center) => (
                 <li key={center.objID} className="border-b border-gray-200 dark:border-gray-700 pb-2 last:border-0">
-                  <div className="font-semibold text-lg">
+                  <div className="font-semibold text-lg text-green-700 dark:text-green-500">
                     {center.positnNm} 
                     {isItemPen && <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">볼펜 전문 수거</span>}
                   </div>
