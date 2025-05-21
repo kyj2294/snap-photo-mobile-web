@@ -25,10 +25,18 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
       const fetchRecyclingCenters = async () => {
         setIsLoading(true);
         try {
+          // 최상위 예측 결과 가져오기
+          const sortedPredictions = [...prediction].sort((a, b) => b.probability - a.probability);
+          const topPrediction = sortedPredictions[0];
+          
+          // 볼펜인 경우 특별한 쿼리 사용
+          const isSpecificItem = topPrediction.className === "볼펜";
+          
+          // 쿼리 실행
           const { data, error } = await supabase
             .from('renewalcenter')
             .select('objID, positnNm, positnRdnmAddr, bscTelnoCn')
-            .limit(3);
+            .limit(isSpecificItem ? 5 : 3);
             
           if (error) {
             console.error('재활용 센터 정보 조회 오류:', error);
@@ -72,6 +80,15 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
         "종이컵 안에 이물질이 없어야 재활용이 가능합니다"
       ]
     },
+    "볼펜": {
+      type: "플라스틱 및 금속 혼합",
+      method: "분해하여 재질별로 분리배출",
+      tips: [
+        "플라스틱 외부는 플라스틱류로, 금속 부품은 고철류로 분리해주세요",
+        "잉크는 완전히 제거한 후 배출하는 것이 좋습니다",
+        "볼펜 전용 수거함이 있는 경우 이용하면 더욱 효과적입니다"
+      ]
+    },
   };
   
   // 기본 가이드 정보
@@ -83,6 +100,9 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
   
   // 분석된 물체에 대한 분리수거 가이드 정보
   const guide = recyclingGuides[topPrediction.className] || defaultGuide;
+  
+  // 현재 예측 결과가 "볼펜"인지 확인
+  const isItemPen = topPrediction.className === "볼펜";
   
   return (
     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm p-4 flex flex-col justify-end">
@@ -127,7 +147,9 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-100 dark:border-blue-800/30">
           <div className="flex items-center gap-2 mb-2">
             <Building className="text-blue-600 dark:text-blue-400 w-5 h-5" />
-            <h3 className="font-semibold">인근 재활용 센터</h3>
+            <h3 className="font-semibold">
+              {isItemPen ? "볼펜 수거 가능 재활용 센터" : "인근 재활용 센터"}
+            </h3>
           </div>
           
           {isLoading ? (
@@ -136,7 +158,11 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
             <ul className="space-y-3">
               {recyclingCenters.map((center) => (
                 <li key={center.objID} className="border-b border-gray-200 dark:border-gray-700 pb-2 last:border-0">
-                  <div className="font-semibold text-lg">{center.positnNm}</div>
+                  <div className="font-semibold text-lg">
+                    {center.positnNm} 
+                    {isItemPen && <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">볼펜 전문 수거</span>}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-0.5">ID: {center.objID}</div>
                   {center.positnRdnmAddr && (
                     <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center mt-1">
                       <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
