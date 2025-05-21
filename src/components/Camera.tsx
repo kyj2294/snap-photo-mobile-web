@@ -22,12 +22,20 @@ const Camera = () => {
     const loadModel = async () => {
       try {
         setModelLoading(true);
-        // Replace with your actual TeacherMachine model URL
+        
+        // 로컬 모델 파일 경로 (public 폴더에 있을 경우)
+        // 아래 두 방법 중 하나를 선택하세요:
+
+        // 방법 1: TeacherMachine에 업로드된 모델 ID를 사용하는 경우 
         const modelURL = "https://teachablemachine.withgoogle.com/models/YOUR_MODEL_ID/";
         const metadataURL = modelURL + "metadata.json";
         const modelJson = modelURL + "model.json";
         
-        // Load the model
+        // 방법 2: 로컬 파일을 사용하는 경우 (public/model 폴더에 모델 파일을 넣은 경우)
+        // const modelJson = "/model/model.json";
+        // const metadataURL = "/model/metadata.json";
+        
+        // 모델 로드
         const loadedModel = await tmImage.load(modelJson, metadataURL);
         setModel(loadedModel);
         
