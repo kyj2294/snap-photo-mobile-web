@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from "react";
 import { Prediction } from "@/hooks/useImageClassifier";
-import { MapPin, Building } from "lucide-react";
+import { MapPin, Building, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -109,6 +110,18 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
     // 새 탭에서 구글 맵 열기
     window.open(googleMapsUrl, '_blank', 'noopener,noreferrer');
   };
+
+  // 전화 걸기 기능 추가
+  const makePhoneCall = (phoneNumber: string) => {
+    if (!phoneNumber) return;
+    
+    // 전화번호에서 괄호와 하이픈 등 특수문자 제거
+    const cleanPhoneNumber = phoneNumber.replace(/[^\d+]/g, '');
+    
+    // tel: 프로토콜을 사용하여 전화 걸기
+    window.location.href = `tel:${cleanPhoneNumber}`;
+  };
+
   if (!prediction) return null;
 
   // 확률 기준으로 내림차순 정렬
@@ -185,8 +198,14 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
                       </span>
                     </div>}
                   
-                  {center.bscTelnoCn && <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
-                      ☎️ {center.bscTelnoCn}
+                  {center.bscTelnoCn && <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5 flex items-center">
+                      <Phone className="w-3.5 h-3.5 mr-1 flex-shrink-0 text-blue-600" />
+                      <span 
+                        className="cursor-pointer hover:text-blue-600 hover:underline" 
+                        onClick={() => makePhoneCall(center.bscTelnoCn || '')}
+                      >
+                        {center.bscTelnoCn}
+                      </span>
                     </div>}
                   
                   {center.prkMthdExpln && <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
