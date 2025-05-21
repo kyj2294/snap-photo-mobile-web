@@ -3,7 +3,7 @@ import React from 'react';
 import Camera from '@/components/Camera';
 import ThemeToggle from '@/components/ThemeToggle';
 import { MapPin, List, User } from 'lucide-react';
-import { ImageIcon } from 'lucide-react';  // Image -> ImageIcon으로 변경
+import { ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLocation } from '@/hooks/useLocation';
 
@@ -41,7 +41,7 @@ const Index = () => {
         <button 
           className="w-full max-w-md py-4 flex items-center justify-center gap-2 bg-green-50 dark:bg-green-950/20 text-green-800 dark:text-green-300 rounded-xl border border-green-100 dark:border-green-900/30"
         >
-          <ImageIcon className="w-5 h-5" />  {/* Image -> ImageIcon으로 변경 */}
+          <ImageIcon size={20} />
           <span>갤러리에서 선택</span>
         </button>
       </main>

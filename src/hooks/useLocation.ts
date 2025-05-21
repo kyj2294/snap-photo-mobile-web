@@ -30,26 +30,30 @@ export function useLocation() {
       try {
         // 카카오 API 사용이 이상적이지만, 여기서는 간단한 역지오코딩 서비스 사용
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1&accept-language=ko`
         );
         
         if (!response.ok) throw new Error("주소 변환 실패");
         
         const data = await response.json();
         
-        // 한국어 주소로 표시 (동 수준의 주소 표시)
+        // 행정동까지만 표시 (한국어 주소 체계)
         let address = "알 수 없는 위치";
+        console.log("위치 데이터:", data);
         
         if (data.address) {
           // 한국 지역 주소 체계에 맞게 처리
-          const city = data.address.city || data.address.town || "";
-          const district = data.address.suburb || data.address.neighbourhood || "";
+          const city = data.address.city || data.address.town || data.address.county || "";
+          const district = data.address.suburb || data.address.neighbourhood || data.address.quarter || "";
           
           if (city && district) {
             address = `${city} ${district}`;
+          } else if (city) {
+            address = city;
           } else if (data.display_name) {
-            // 대체 주소 표시
-            address = data.display_name.split(',').slice(0, 2).join(',');
+            // 대체 주소 표시 (더 간단하게)
+            const parts = data.display_name.split(',');
+            address = parts.length > 1 ? parts.slice(0, 2).join(' ') : parts[0];
           }
         }
         
