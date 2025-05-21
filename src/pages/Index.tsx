@@ -19,12 +19,7 @@ const Index = () => {
         <p className="text-sm opacity-90 text-center mt-1">이미지 인식 기반 재활용 가이드</p>
       
         {/* 위치 정보 표시 */}
-        <div className="mt-3 flex items-center justify-center text-sm opacity-90">
-          <MapPin className="w-4 h-4 mr-1" />
-          <span>
-            {loading ? "위치 정보 확인 중..." : location.address}
-          </span>
-        </div>
+        
       </header>
       
       <main className="flex-1 flex flex-col items-center justify-center p-6 gap-4">
