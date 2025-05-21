@@ -2,7 +2,7 @@
 import React from 'react';
 import Camera from '@/components/Camera';
 import ThemeToggle from '@/components/ThemeToggle';
-import { MapPin, List, User } from 'lucide-react';
+import { MapPin, List, User, Camera as CameraIcon } from 'lucide-react';
 import { ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLocation } from '@/hooks/useLocation';
@@ -56,7 +56,7 @@ const Index = () => {
           
           <Link to="/" className="flex flex-col items-center">
             <div className="rounded-full bg-green-500 w-14 h-14 flex items-center justify-center -mt-6 border-4 border-white dark:border-gray-800">
-              <Camera className="w-6 h-6 text-white" />
+              <CameraIcon className="w-6 h-6 text-white" />
             </div>
             <span className="text-xs mt-1 text-gray-600 dark:text-gray-400">촬영</span>
           </Link>
