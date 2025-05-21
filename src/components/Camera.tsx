@@ -1,8 +1,9 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Camera as CameraIcon, Upload, RefreshCw } from "lucide-react";
+import { Camera as CameraIcon, Upload, RefreshCw, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import * as tmImage from "@teachablemachine/image";
 
 const Camera = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -10,7 +11,51 @@ const Camera = () => {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
+  const [model, setModel] = useState<tmImage.CustomMobileNet | null>(null);
+  const [modelLoading, setModelLoading] = useState(false);
+  const [predicting, setPredicting] = useState(false);
+  const [prediction, setPrediction] = useState<Array<{className: string, probability: number}> | null>(null);
   const { toast } = useToast();
+
+  // Load the TeacherMachine model
+  useEffect(() => {
+    const loadModel = async () => {
+      try {
+        setModelLoading(true);
+        // Replace with your actual TeacherMachine model URL
+        const modelURL = "https://teachablemachine.withgoogle.com/models/YOUR_MODEL_ID/";
+        const metadataURL = modelURL + "metadata.json";
+        const modelJson = modelURL + "model.json";
+        
+        // Load the model
+        const loadedModel = await tmImage.load(modelJson, metadataURL);
+        setModel(loadedModel);
+        
+        toast({
+          title: "모델 로드 완료",
+          description: "이미지 분류 모델이 성공적으로 로드되었습니다.",
+        });
+      } catch (error) {
+        console.error("Error loading model:", error);
+        toast({
+          title: "모델 로드 오류",
+          description: "이미지 분류 모델을 불러오는데 실패했습니다.",
+          variant: "destructive",
+        });
+      } finally {
+        setModelLoading(false);
+      }
+    };
+    
+    loadModel();
+    
+    // Clean up function
+    return () => {
+      if (model) {
+        // Clean up model if needed
+      }
+    };
+  }, []);
 
   const startCamera = async () => {
     try {
@@ -60,6 +105,7 @@ const Camera = () => {
       // Convert canvas to data URL
       const imageDataUrl = canvas.toDataURL("image/jpeg");
       setCapturedImage(imageDataUrl);
+      setPrediction(null); // Reset previous predictions
       
       // Play capture sound or add visual feedback
       toast({
@@ -72,26 +118,47 @@ const Camera = () => {
     }
   };
 
-  const handleUpload = () => {
-    toast({
-      title: "업로드 중",
-      description: "사진을 업로드하는 중입니다...",
-    });
-    
-    // Simulate upload process
-    setTimeout(() => {
+  const classifyImage = async () => {
+    if (!capturedImage || !model || !canvasRef.current) {
       toast({
-        title: "업로드 완료",
-        description: "사진이 성공적으로 업로드되었습니다.",
+        title: "분류 오류",
+        description: "이미지 또는 모델을 찾을 수 없습니다.",
+        variant: "destructive",
       });
+      return;
+    }
+
+    try {
+      setPredicting(true);
       
-      // Reset the state to allow taking a new photo
-      setCapturedImage(null);
-    }, 1500);
+      // Classify the image
+      const predictions = await model.predict(canvasRef.current);
+      
+      setPrediction(predictions);
+      
+      toast({
+        title: "이미지 분류 완료",
+        description: `가장 높은 확률: ${predictions[0].className} (${(predictions[0].probability * 100).toFixed(2)}%)`,
+      });
+    } catch (error) {
+      console.error("Error classifying image:", error);
+      toast({
+        title: "분류 오류",
+        description: "이미지 분류 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    } finally {
+      setPredicting(false);
+    }
+  };
+
+  const handleUpload = () => {
+    classifyImage();
   };
 
   const retakePhoto = () => {
     setCapturedImage(null);
+    setPrediction(null);
     startCamera();
   };
 
@@ -130,16 +197,49 @@ const Camera = () => {
         
         {/* Overlay gradient for aesthetic look */}
         <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
+
+        {/* Show prediction results overlay */}
+        {prediction && (
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm p-4 flex flex-col justify-end">
+            <div className="bg-black/60 rounded-lg p-4 border border-white/10">
+              <h3 className="text-white text-lg font-bold mb-2">분류 결과</h3>
+              <ul className="space-y-2">
+                {prediction.slice(0, 3).map((pred, index) => (
+                  <li key={index} className="flex justify-between items-center">
+                    <span className="text-white">{pred.className}</span>
+                    <div className="w-full max-w-32 bg-gray-700 rounded-full h-2.5 ml-2">
+                      <div 
+                        className="bg-gradient-to-r from-blue-500 to-purple-500 h-2.5 rounded-full" 
+                        style={{ width: `${pred.probability * 100}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-white ml-2 text-sm">{(pred.probability * 100).toFixed(1)}%</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
       </div>
       
       <div className="flex w-full gap-4 justify-center">
         {!cameraActive && !capturedImage && (
           <Button 
             onClick={startCamera}
+            disabled={modelLoading}
             className="h-16 w-full text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-none shadow-md shadow-purple-900/20 dark:shadow-purple-500/10"
           >
-            <CameraIcon className="mr-2 h-6 w-6" />
-            사진 찍기
+            {modelLoading ? (
+              <>
+                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                모델 로드중...
+              </>
+            ) : (
+              <>
+                <CameraIcon className="mr-2 h-6 w-6" />
+                사진 찍기
+              </>
+            )}
           </Button>
         )}
         
@@ -165,10 +265,20 @@ const Camera = () => {
             </Button>
             <Button 
               onClick={handleUpload}
+              disabled={predicting}
               className="h-16 flex-1 text-lg bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-md shadow-blue-900/20 dark:shadow-blue-500/10"
             >
-              <Upload className="mr-2 h-5 w-5" />
-              업로드
+              {predicting ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  분석중...
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-2 h-5 w-5" />
+                  분류하기
+                </>
+              )}
             </Button>
           </div>
         )}
