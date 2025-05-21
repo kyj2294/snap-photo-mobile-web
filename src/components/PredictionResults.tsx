@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from "react";
 import { Prediction } from "@/hooks/useImageClassifier";
-import { MapPin, Building, Phone } from "lucide-react";
+import { MapPin, Building, Phone, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,14 @@ interface RecyclingCenter {
   positnRdnmAddr?: string;
   bscTelnoCn?: string;
   clctItemCn?: string;
-  prkMthdExpln?: string; // 주차 방법 정보 추가
+  prkMthdExpln?: string; // 주차 방법 정보
+  monSalsHrExplnCn?: string; // 월요일 영업시간
+  tuesSalsHrExplnCn?: string; // 화요일 영업시간
+  wedSalsHrExplnCn?: string; // 수요일 영업시간
+  thurSalsHrExplnCn?: string; // 목요일 영업시간
+  friSalsHrExplnCn?: string; // 금요일 영업시간
+  satSalsHrExplnCn?: string; // 토요일 영업시간
+  sunSalsHrExplnCn?: string; // 일요일 영업시간
 }
 const PredictionResults: React.FC<PredictionResultsProps> = ({
   prediction
@@ -44,7 +52,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
           const {
             data,
             error
-          } = await supabase.from('renewalcenter').select('objID, positnNm, positnRdnmAddr, bscTelnoCn, clctItemCn, prkMthdExpln').eq('objID', predictedObjID);
+          } = await supabase.from('renewalcenter').select('objID, positnNm, positnRdnmAddr, bscTelnoCn, clctItemCn, prkMthdExpln, monSalsHrExplnCn, tuesSalsHrExplnCn, wedSalsHrExplnCn, thurSalsHrExplnCn, friSalsHrExplnCn, satSalsHrExplnCn, sunSalsHrExplnCn').eq('objID', predictedObjID);
           if (error) {
             console.error('재활용 센터 정보 조회 오류:', error);
             toast({
@@ -56,7 +64,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
             setRecyclingCenters(data);
           } else {
             // objID로 정확히 찾을 수 없는 경우 이전 방식으로 검색
-            let query = supabase.from('renewalcenter').select('objID, positnNm, positnRdnmAddr, bscTelnoCn, clctItemCn, prkMthdExpln');
+            let query = supabase.from('renewalcenter').select('objID, positnNm, positnRdnmAddr, bscTelnoCn, clctItemCn, prkMthdExpln, monSalsHrExplnCn, tuesSalsHrExplnCn, wedSalsHrExplnCn, thurSalsHrExplnCn, friSalsHrExplnCn, satSalsHrExplnCn, sunSalsHrExplnCn');
             if (topPrediction.className === "볼펜") {
               query = query.or(`clctItemCn.ilike.%볼펜%,clctItemCn.ilike.%필기구%`);
             } else if (topPrediction.className === "커피컵") {
@@ -120,6 +128,42 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
     // tel: 프로토콜을 사용하여 전화 걸기
     window.location.href = `tel:${cleanPhoneNumber}`;
   };
+
+  // 영업시간 요약 함수 생성
+  const renderBusinessHours = (center: RecyclingCenter) => {
+    const hours = [
+      { day: '월', hours: center.monSalsHrExplnCn },
+      { day: '화', hours: center.tuesSalsHrExplnCn },
+      { day: '수', hours: center.wedSalsHrExplnCn },
+      { day: '목', hours: center.thurSalsHrExplnCn },
+      { day: '금', hours: center.friSalsHrExplnCn },
+      { day: '토', hours: center.satSalsHrExplnCn },
+      { day: '일', hours: center.sunSalsHrExplnCn }
+    ];
+
+    // 영업시간 정보가 있는지 확인
+    const hasHoursInfo = hours.some(day => day.hours && day.hours.trim() !== '');
+
+    if (!hasHoursInfo) return null;
+
+    return (
+      <div className="mt-2 text-sm">
+        <div className="flex items-center gap-1 mb-1 text-blue-600 dark:text-blue-400">
+          <Clock className="w-3.5 h-3.5" />
+          <span className="font-medium">영업시간:</span>
+        </div>
+        <div className="grid grid-cols-7 gap-1 bg-gray-50 dark:bg-gray-800/50 rounded-md p-2 text-xs">
+          {hours.map((item, index) => (
+            <div key={index} className="flex flex-col items-center">
+              <span className="font-medium text-gray-700 dark:text-gray-300">{item.day}</span>
+              <span className="text-gray-600 dark:text-gray-400">{item.hours || '-'}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   if (!prediction) return null;
 
   // 확률 기준으로 내림차순 정렬
@@ -207,9 +251,8 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
                       🚗 <span className="font-medium">주차:</span> {center.prkMthdExpln}
                     </div>}
                   
-                  <div className="mt-2">
-                    
-                  </div>
+                  {/* 영업시간 정보 추가 */}
+                  {renderBusinessHours(center)}
                 </li>)}
             </ul> : <p className="text-gray-600 dark:text-gray-400 text-center py-2">
               '{topPrediction.className}'에 대한 재활용 센터 정보가 없습니다.
