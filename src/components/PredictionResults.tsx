@@ -9,10 +9,22 @@ interface PredictionResultsProps {
 const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => {
   if (!prediction) return null;
   
+  // Get the highest probability prediction
+  const topPrediction = prediction[0];
+  
   return (
     <div className="absolute inset-0 bg-black/40 backdrop-blur-sm p-4 flex flex-col justify-end">
       <div className="bg-black/60 rounded-lg p-4 border border-white/10">
-        <h3 className="text-white text-lg font-bold mb-2">분류 결과</h3>
+        {/* Highlight the top result */}
+        <div className="mb-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-3 shadow-lg">
+          <h3 className="text-white text-xl font-bold">최고 확률 결과</h3>
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-white text-lg font-semibold">{topPrediction.className}</span>
+            <span className="text-white text-xl font-bold">{(topPrediction.probability * 100).toFixed(1)}%</span>
+          </div>
+        </div>
+        
+        <h3 className="text-white text-lg font-bold mb-2">전체 결과</h3>
         <ul className="space-y-2">
           {prediction.slice(0, 3).map((pred, index) => (
             <li key={index} className="flex justify-between items-center">
