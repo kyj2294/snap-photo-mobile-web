@@ -5,8 +5,11 @@ import ThemeToggle from '@/components/ThemeToggle';
 import { MapPin, List, User } from 'lucide-react';
 import { ImageIcon } from 'lucide-react';  // Image -> ImageIcon으로 변경
 import { Link } from 'react-router-dom';
+import { useLocation } from '@/hooks/useLocation';
 
 const Index = () => {
+  const { location, loading } = useLocation();
+  
   return (
     <div className="min-h-screen flex flex-col dark:bg-gray-900 bg-gray-100 transition-colors duration-300">
       <header className="bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 text-white p-6 relative">
@@ -19,7 +22,13 @@ const Index = () => {
         {/* 위치 정보 표시 */}
         <div className="mt-3 flex items-center justify-center text-sm opacity-90">
           <MapPin className="w-4 h-4 mr-1" />
-          <span>화성시 병점동</span>
+          <span>
+            {loading ? (
+              "위치 정보 확인 중..."
+            ) : (
+              location.address
+            )}
+          </span>
         </div>
       </header>
       
