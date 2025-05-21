@@ -1,3 +1,4 @@
+
 import React from "react";
 interface RecyclingGuideInfo {
   type: string;
@@ -45,19 +46,19 @@ const RecyclingGuide: React.FC<RecyclingGuideProps> = ({
       
       <div className="space-y-2">
         <div>
-          
-          
+          <h3 className="font-medium text-gray-900 dark:text-gray-100">분류: {guide.type}</h3>
         </div>
         
         <div>
-          
-          
+          <p className="text-gray-700 dark:text-gray-300">배출 방법: {guide.method}</p>
         </div>
         
         {guide.tips.length > 0 && <div>
-            
+            <h4 className="font-medium text-gray-900 dark:text-gray-100 mt-2">알아두면 좋은 팁:</h4>
             <ul className="list-disc list-inside text-gray-800 dark:text-gray-200 pl-1 space-y-1">
-              {guide.tips.map((tip, index) => {})}
+              {guide.tips.map((tip, index) => (
+                <li key={index}>{tip}</li>
+              ))}
             </ul>
           </div>}
       </div>
