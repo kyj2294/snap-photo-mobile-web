@@ -1,8 +1,8 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Camera as CameraIcon, Upload } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { Camera as CameraIcon, Upload, RefreshCw } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Camera = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -104,7 +104,7 @@ const Camera = () => {
 
   return (
     <div className="flex flex-col items-center w-full max-w-md mx-auto">
-      <div className="relative w-full aspect-[3/4] bg-black rounded-lg overflow-hidden mb-4">
+      <div className="relative w-full aspect-[3/4] bg-black rounded-xl overflow-hidden mb-6 shadow-lg border border-white/10">
         {!capturedImage ? (
           <>
             <video
@@ -114,8 +114,8 @@ const Camera = () => {
               className={`w-full h-full object-cover ${cameraActive ? "block" : "hidden"}`}
             />
             {!cameraActive && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <CameraIcon className="w-16 h-16 text-gray-400" />
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-800 to-gray-900">
+                <CameraIcon className="w-20 h-20 text-gray-400 opacity-40" />
               </div>
             )}
           </>
@@ -127,14 +127,18 @@ const Camera = () => {
           />
         )}
         <canvas ref={canvasRef} className="hidden" />
+        
+        {/* Overlay gradient for aesthetic look */}
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"></div>
       </div>
       
       <div className="flex w-full gap-4 justify-center">
         {!cameraActive && !capturedImage && (
           <Button 
             onClick={startCamera}
-            className="h-16 w-full text-lg bg-blue-500 hover:bg-blue-600"
+            className="h-16 w-full text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-none shadow-md shadow-purple-900/20 dark:shadow-purple-500/10"
           >
+            <CameraIcon className="mr-2 h-6 w-6" />
             사진 찍기
           </Button>
         )}
@@ -142,27 +146,31 @@ const Camera = () => {
         {cameraActive && (
           <Button 
             onClick={takePhoto}
-            className="h-16 w-full text-lg bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center"
+            className="h-20 w-20 rounded-full flex items-center justify-center bg-white dark:bg-white border-4 border-blue-500 dark:border-blue-400 shadow-lg hover:scale-105 transition-transform duration-200"
+            variant="outline"
           >
-            <div className="w-12 h-12 bg-white rounded-full border-4 border-blue-500"></div>
+            <div className="w-14 h-14 bg-red-500 rounded-full"></div>
           </Button>
         )}
         
         {capturedImage && (
-          <>
+          <div className="grid grid-cols-2 gap-4 w-full">
             <Button 
               onClick={retakePhoto}
-              className="h-16 flex-1 text-lg bg-blue-500 hover:bg-blue-600"
+              variant="outline"
+              className="h-16 flex-1 text-lg bg-black/10 backdrop-blur-md border border-white/20 text-white dark:text-gray-200 hover:bg-black/20 shadow-md"
             >
-              사진 찍기
+              <RefreshCw className="mr-2 h-5 w-5" />
+              다시 찍기
             </Button>
             <Button 
               onClick={handleUpload}
-              className="h-16 flex-1 text-lg bg-blue-500 hover:bg-blue-600"
+              className="h-16 flex-1 text-lg bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white shadow-md shadow-blue-900/20 dark:shadow-blue-500/10"
             >
+              <Upload className="mr-2 h-5 w-5" />
               업로드
             </Button>
-          </>
+          </div>
         )}
       </div>
     </div>
