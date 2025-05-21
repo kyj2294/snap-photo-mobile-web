@@ -9,6 +9,27 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bigObject: {
+        Row: {
+          amount: number | null
+          ggyuk: string | null
+          gubn: string | null
+          objName: string | null
+        }
+        Insert: {
+          amount?: number | null
+          ggyuk?: string | null
+          gubn?: string | null
+          objName?: string | null
+        }
+        Update: {
+          amount?: number | null
+          ggyuk?: string | null
+          gubn?: string | null
+          objName?: string | null
+        }
+        Relationships: []
+      }
       korean_regions: {
         Row: {
           area: number | null
@@ -27,6 +48,39 @@ export type Database = {
           id?: number
           name?: string
           type?: string
+        }
+        Relationships: []
+      }
+      minwon_voice: {
+        Row: {
+          id: number
+          "PDF 파일": string | null
+          공개여부: string | null
+          내용: string | null
+          이름: string | null
+          이메일: string | null
+          전화번호: string | null
+          제목: string | null
+        }
+        Insert: {
+          id?: number
+          "PDF 파일"?: string | null
+          공개여부?: string | null
+          내용?: string | null
+          이름?: string | null
+          이메일?: string | null
+          전화번호?: string | null
+          제목?: string | null
+        }
+        Update: {
+          id?: number
+          "PDF 파일"?: string | null
+          공개여부?: string | null
+          내용?: string | null
+          이름?: string | null
+          이메일?: string | null
+          전화번호?: string | null
+          제목?: string | null
         }
         Relationships: []
       }
@@ -79,6 +133,168 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      QuestLaw: {
+        Row: {
+          answer_cn: string | null
+          id: number
+          point: number | null
+          quest_cn: string | null
+          quest_dt: string
+          quest_userid: string | null
+        }
+        Insert: {
+          answer_cn?: string | null
+          id?: number
+          point?: number | null
+          quest_cn?: string | null
+          quest_dt?: string
+          quest_userid?: string | null
+        }
+        Update: {
+          answer_cn?: string | null
+          id?: number
+          point?: number | null
+          quest_cn?: string | null
+          quest_dt?: string
+          quest_userid?: string | null
+        }
+        Relationships: []
+      }
+      QuestUser: {
+        Row: {
+          admin_yn: boolean | null
+          created_at: string
+          use_yn: boolean | null
+          user_id: string
+          user_pass: string | null
+        }
+        Insert: {
+          admin_yn?: boolean | null
+          created_at?: string
+          use_yn?: boolean | null
+          user_id: string
+          user_pass?: string | null
+        }
+        Update: {
+          admin_yn?: boolean | null
+          created_at?: string
+          use_yn?: boolean | null
+          user_id?: string
+          user_pass?: string | null
+        }
+        Relationships: []
+      }
+      renewalcenter: {
+        Row: {
+          bscTelnoCn: string | null
+          clctItemCn: string | null
+          comRelSrwrdListCn: string | null
+          dyoffBgndeCn: string | null
+          dyoffEnddtCn: string | null
+          dyoffRsnExpln: string | null
+          etcMttrCn: string | null
+          friSalsHrExplnCn: string | null
+          indivRelSrchListCn: string | null
+          indivTelnoCn: string | null
+          lhldyDyoffCn: string | null
+          lhldySalsHrExplnCn: string | null
+          lnkgHmpgUrlAddr: string | null
+          monSalsHrExplnCn: string | null
+          objID: string | null
+          point: number | null
+          positnCnvncFcltSrvcExpln: string | null
+          positnIntdcCn: string | null
+          positnLotnoAddr: string | null
+          positnNm: string | null
+          positnPstnAddExpln: string | null
+          positnPstnLat: number | null
+          positnPstnLot: number | null
+          positnRdnmAddr: string | null
+          positnRgnNm: string | null
+          prkMthdExpln: string | null
+          rprsTelnoCn: string | null
+          satSalsHrExplnCn: string | null
+          sunSalsHrExplnCn: string | null
+          telnoExpln: string | null
+          thurSalsHrExplnCn: string | null
+          tmprLhldyCn: string | null
+          tuesSalsHrExplnCn: string | null
+          wedSalsHrExplnCn: string | null
+        }
+        Insert: {
+          bscTelnoCn?: string | null
+          clctItemCn?: string | null
+          comRelSrwrdListCn?: string | null
+          dyoffBgndeCn?: string | null
+          dyoffEnddtCn?: string | null
+          dyoffRsnExpln?: string | null
+          etcMttrCn?: string | null
+          friSalsHrExplnCn?: string | null
+          indivRelSrchListCn?: string | null
+          indivTelnoCn?: string | null
+          lhldyDyoffCn?: string | null
+          lhldySalsHrExplnCn?: string | null
+          lnkgHmpgUrlAddr?: string | null
+          monSalsHrExplnCn?: string | null
+          objID?: string | null
+          point?: number | null
+          positnCnvncFcltSrvcExpln?: string | null
+          positnIntdcCn?: string | null
+          positnLotnoAddr?: string | null
+          positnNm?: string | null
+          positnPstnAddExpln?: string | null
+          positnPstnLat?: number | null
+          positnPstnLot?: number | null
+          positnRdnmAddr?: string | null
+          positnRgnNm?: string | null
+          prkMthdExpln?: string | null
+          rprsTelnoCn?: string | null
+          satSalsHrExplnCn?: string | null
+          sunSalsHrExplnCn?: string | null
+          telnoExpln?: string | null
+          thurSalsHrExplnCn?: string | null
+          tmprLhldyCn?: string | null
+          tuesSalsHrExplnCn?: string | null
+          wedSalsHrExplnCn?: string | null
+        }
+        Update: {
+          bscTelnoCn?: string | null
+          clctItemCn?: string | null
+          comRelSrwrdListCn?: string | null
+          dyoffBgndeCn?: string | null
+          dyoffEnddtCn?: string | null
+          dyoffRsnExpln?: string | null
+          etcMttrCn?: string | null
+          friSalsHrExplnCn?: string | null
+          indivRelSrchListCn?: string | null
+          indivTelnoCn?: string | null
+          lhldyDyoffCn?: string | null
+          lhldySalsHrExplnCn?: string | null
+          lnkgHmpgUrlAddr?: string | null
+          monSalsHrExplnCn?: string | null
+          objID?: string | null
+          point?: number | null
+          positnCnvncFcltSrvcExpln?: string | null
+          positnIntdcCn?: string | null
+          positnLotnoAddr?: string | null
+          positnNm?: string | null
+          positnPstnAddExpln?: string | null
+          positnPstnLat?: number | null
+          positnPstnLot?: number | null
+          positnRdnmAddr?: string | null
+          positnRgnNm?: string | null
+          prkMthdExpln?: string | null
+          rprsTelnoCn?: string | null
+          satSalsHrExplnCn?: string | null
+          sunSalsHrExplnCn?: string | null
+          telnoExpln?: string | null
+          thurSalsHrExplnCn?: string | null
+          tmprLhldyCn?: string | null
+          tuesSalsHrExplnCn?: string | null
+          wedSalsHrExplnCn?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {

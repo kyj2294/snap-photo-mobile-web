@@ -1,13 +1,51 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Prediction } from "@/hooks/useImageClassifier";
-import { MapPin, AlertCircle, Recycle } from "lucide-react";
+import { MapPin, AlertCircle, Recycle, Building } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PredictionResultsProps {
   prediction: Prediction[] | null;
 }
 
+// 재활용 센터 정보를 위한 타입 정의
+interface RecyclingCenter {
+  objID: string;
+  positnNm: string;
+  positnRdnmAddr?: string;
+  bscTelnoCn?: string;
+}
+
 const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => {
+  const [recyclingCenters, setRecyclingCenters] = useState<RecyclingCenter[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (prediction && prediction.length > 0) {
+      const fetchRecyclingCenters = async () => {
+        setIsLoading(true);
+        try {
+          const { data, error } = await supabase
+            .from('renewalcenter')
+            .select('objID, positnNm, positnRdnmAddr, bscTelnoCn')
+            .limit(3);
+            
+          if (error) {
+            console.error('재활용 센터 정보 조회 오류:', error);
+          } else if (data) {
+            setRecyclingCenters(data);
+          }
+        } catch (error) {
+          console.error('재활용 센터 데이터 요청 실패:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchRecyclingCenters();
+    }
+  }, [prediction]);
+
   if (!prediction) return null;
   
   // 확률 기준으로 내림차순 정렬
@@ -83,6 +121,41 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
               <li key={index}>{tip}</li>
             ))}
           </ul>
+        </div>
+        
+        {/* 재활용 센터 정보 추가 */}
+        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-100 dark:border-blue-800/30">
+          <div className="flex items-center gap-2 mb-2">
+            <Building className="text-blue-600 dark:text-blue-400 w-5 h-5" />
+            <h3 className="font-semibold">인근 재활용 센터</h3>
+          </div>
+          
+          {isLoading ? (
+            <p className="text-gray-600 dark:text-gray-400 text-center py-2">재활용 센터 정보를 불러오는 중...</p>
+          ) : recyclingCenters.length > 0 ? (
+            <ul className="space-y-3">
+              {recyclingCenters.map((center) => (
+                <li key={center.objID} className="border-b border-gray-200 dark:border-gray-700 pb-2 last:border-0">
+                  <div className="font-semibold text-lg">{center.positnNm}</div>
+                  {center.positnRdnmAddr && (
+                    <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center mt-1">
+                      <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
+                      <span>{center.positnRdnmAddr}</span>
+                    </div>
+                  )}
+                  {center.bscTelnoCn && (
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
+                      ☎️ {center.bscTelnoCn}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600 dark:text-gray-400 text-center py-2">
+              등록된 재활용 센터 정보가 없습니다.
+            </p>
+          )}
         </div>
         
         {/* 다른 예측 결과들 */}
