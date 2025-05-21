@@ -72,6 +72,7 @@ const Camera = () => {
           capturedImage={capturedImage}
           modelLoading={modelLoading}
           predicting={predicting}
+          prediction={prediction}
           onStartCamera={startCamera}
           onTakePhoto={takePhoto}
           onRetakePhoto={() => {

@@ -2,12 +2,14 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Camera as CameraIcon, Upload, RefreshCw, Loader2 } from "lucide-react";
+import { Prediction } from "@/hooks/useImageClassifier";
 
 interface CameraControlsProps {
   cameraActive: boolean;
   capturedImage: string | null;
   modelLoading: boolean;
   predicting: boolean;
+  prediction: Prediction[] | null;
   onStartCamera: () => void;
   onTakePhoto: () => void;
   onRetakePhoto: () => void;
@@ -19,6 +21,7 @@ const CameraControls: React.FC<CameraControlsProps> = ({
   capturedImage,
   modelLoading,
   predicting,
+  prediction,
   onStartCamera,
   onTakePhoto,
   onRetakePhoto,
@@ -59,6 +62,10 @@ const CameraControls: React.FC<CameraControlsProps> = ({
   }
   
   if (capturedImage) {
+    // Show top prediction if available
+    const hasTopPrediction = prediction && prediction.length > 0;
+    const topPrediction = hasTopPrediction ? prediction[0] : null;
+    
     return (
       <div className="grid grid-cols-2 gap-4 w-full">
         <Button 
@@ -79,6 +86,11 @@ const CameraControls: React.FC<CameraControlsProps> = ({
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               분석중...
             </>
+          ) : topPrediction ? (
+            <div className="flex flex-col items-center justify-center w-full">
+              <span className="text-sm font-bold">{topPrediction.className}</span>
+              <span className="text-xs">{(topPrediction.probability * 100).toFixed(1)}%</span>
+            </div>
           ) : (
             <>
               <Upload className="mr-2 h-5 w-5" />
