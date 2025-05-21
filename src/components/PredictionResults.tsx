@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Prediction } from "@/hooks/useImageClassifier";
+import { MapPin, AlertCircle, Recycle } from "lucide-react";
 
 interface PredictionResultsProps {
   prediction: Prediction[] | null;
@@ -9,39 +10,103 @@ interface PredictionResultsProps {
 const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => {
   if (!prediction) return null;
   
-  // Sort predictions by probability in descending order
+  // 확률 기준으로 내림차순 정렬
   const sortedPredictions = [...prediction].sort((a, b) => b.probability - a.probability);
   
-  // Get the highest probability prediction
+  // 가장 높은 확률의 예측 결과
   const topPrediction = sortedPredictions[0];
   
+  // 분리수거 가이드 정보 (실제로는 DB나 API에서 가져올 수 있음)
+  const recyclingGuides: {[key: string]: {type: string, method: string, tips: string[]}} = {
+    "커피컵": {
+      type: "일반쓰레기",
+      method: "음식물 잔여물 제거 필수",
+      tips: [
+        "커피컵은 내부에 알루미늄 코팅이 되어 있어 재활용이 어렵습니다",
+        "깨끗이 씻어서 버리면 환경오염을 줄일 수 있습니다"
+      ]
+    },
+    "종이컵": {
+      type: "종이류",
+      method: "깨끗이 씻어서 분리수거함에 배출",
+      tips: [
+        "내용물을 비우고 물로 헹궈 배출하세요",
+        "종이컵 안에 이물질이 없어야 재활용이 가능합니다"
+      ]
+    },
+  };
+  
+  // 기본 가이드 정보
+  const defaultGuide = {
+    type: "알 수 없음",
+    method: "지역 분리수거 지침을 확인하세요",
+    tips: ["정확한 분리배출 방법은 지자체 홈페이지에서 확인할 수 있습니다"]
+  };
+  
+  // 분석된 물체에 대한 분리수거 가이드 정보
+  const guide = recyclingGuides[topPrediction.className] || defaultGuide;
+  
   return (
-    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm p-4 flex flex-col justify-end">
-      <div className="bg-black/60 rounded-lg p-4 border border-white/10">
-        {/* Highlight the top result */}
-        <div className="mb-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-3 shadow-lg">
-          <h3 className="text-white text-xl font-bold">최고 확률 결과</h3>
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-white text-lg font-semibold">{topPrediction.className}</span>
-            <span className="text-white text-xl font-bold">{Math.round(topPrediction.probability * 100)}%</span>
+    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm p-4 flex flex-col justify-end">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div className="p-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+          <h2 className="text-xl font-bold text-center mb-2">분석 결과</h2>
+          <div className="flex items-center justify-between">
+            <div className="text-2xl font-bold">{topPrediction.className}</div>
+            <div className="text-xl font-semibold">{Math.round(topPrediction.probability * 100)}%</div>
+          </div>
+          
+          {/* 위치 정보 */}
+          <div className="flex items-center mt-1 text-sm opacity-85">
+            <MapPin className="w-4 h-4 mr-1" />
+            <span>화성시 병점동 기준</span>
           </div>
         </div>
         
-        <h3 className="text-white text-lg font-bold mb-2">전체 결과</h3>
-        <ul className="space-y-2">
-          {sortedPredictions.slice(0, 3).map((pred, index) => (
-            <li key={index} className="flex justify-between items-center">
-              <span className="text-white">{pred.className}</span>
-              <div className="w-full max-w-32 bg-gray-700 rounded-full h-2.5 ml-2">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-2.5 rounded-full" 
-                  style={{ width: `${Math.round(pred.probability * 100)}%` }}
-                ></div>
-              </div>
-              <span className="text-white ml-2 text-sm">{Math.round(pred.probability * 100)}%</span>
-            </li>
-          ))}
-        </ul>
+        {/* 분리수거 방법 안내 */}
+        <div className="p-4 bg-green-50 dark:bg-green-900/20 border-t border-b border-green-100 dark:border-green-800/30">
+          <div className="flex items-center gap-2">
+            <Recycle className="text-green-600 dark:text-green-400 w-5 h-5" />
+            <div className="font-semibold text-lg">{guide.type}</div>
+          </div>
+          <p className="text-gray-700 dark:text-gray-300 mt-1">{guide.method}</p>
+        </div>
+        
+        {/* 알아두면 좋은 팁 */}
+        <div className="p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertCircle className="text-blue-500 w-5 h-5" />
+            <h3 className="font-semibold">알아두면 좋은 팁</h3>
+          </div>
+          <ul className="ml-6 list-disc space-y-1 text-sm text-gray-700 dark:text-gray-300">
+            {guide.tips.map((tip, index) => (
+              <li key={index}>{tip}</li>
+            ))}
+          </ul>
+        </div>
+        
+        {/* 다른 예측 결과들 */}
+        <div className="p-4 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-700">
+          <h3 className="text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">다른 가능성</h3>
+          <ul className="space-y-2">
+            {sortedPredictions.slice(1, 3).map((pred, index) => (
+              <li key={index} className="flex justify-between items-center">
+                <span className="text-gray-800 dark:text-gray-200">{pred.className}</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full" 
+                      style={{ width: `${Math.round(pred.probability * 100)}%` }}
+                    ></div>
+                  </div>
+                  <span className="text-gray-700 dark:text-gray-300 text-sm w-10 text-right">
+                    {Math.round(pred.probability * 100)}%
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
