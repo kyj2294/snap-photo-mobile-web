@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import * as tmImage from "@teachablemachine/image";
 import { useToast } from "@/hooks/use-toast";
@@ -20,12 +21,24 @@ export function useImageClassifier() {
       try {
         setModelLoading(true);
         
-        // 로컬 모델 파일 경로 사용 (public/model 폴더에 모델 파일을 넣은 경우)
-        const modelJson = "/model/model.json";
-        const metadataURL = "/model/metadata.json";
+        // 모델 URL 설정 (public/model 폴더의 모델 파일 경로)
+        const modelURL = "model/model.json";
+        const metadataURL = "model/metadata.json";
+
+        console.log("모델 로드 시도:", modelURL, metadataURL);
         
-        // 모델 로드
-        const loadedModel = await tmImage.load(modelJson, metadataURL);
+        // 메타데이터 먼저 로드하여 검증
+        const metadataResponse = await fetch(metadataURL);
+        if (!metadataResponse.ok) {
+          throw new Error(`메타데이터 파일을 로드할 수 없습니다: ${metadataResponse.status}`);
+        }
+        const metadata = await metadataResponse.json();
+        console.log("메타데이터 로드 완료:", metadata);
+        
+        // 모델 로드 시도
+        const loadedModel = await tmImage.load(modelURL, metadataURL);
+        console.log("모델 로드 완료!");
+        
         setModel(loadedModel);
         
         toast({
@@ -36,7 +49,7 @@ export function useImageClassifier() {
         console.error("Error loading model:", error);
         toast({
           title: "모델 로드 오류",
-          description: "이미지 분류 모델을 불러오는데 실패했습니다.",
+          description: "이미지 분류 모델을 불러오는데 실패했습니다. 콘솔을 확인하세요.",
           variant: "destructive",
         });
       } finally {
