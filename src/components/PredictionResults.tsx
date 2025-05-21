@@ -9,8 +9,11 @@ interface PredictionResultsProps {
 const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => {
   if (!prediction) return null;
   
+  // Sort predictions by probability in descending order
+  const sortedPredictions = [...prediction].sort((a, b) => b.probability - a.probability);
+  
   // Get the highest probability prediction
-  const topPrediction = prediction[0];
+  const topPrediction = sortedPredictions[0];
   
   return (
     <div className="absolute inset-0 bg-black/40 backdrop-blur-sm p-4 flex flex-col justify-end">
@@ -26,7 +29,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
         
         <h3 className="text-white text-lg font-bold mb-2">전체 결과</h3>
         <ul className="space-y-2">
-          {prediction.slice(0, 3).map((pred, index) => (
+          {sortedPredictions.slice(0, 3).map((pred, index) => (
             <li key={index} className="flex justify-between items-center">
               <span className="text-white">{pred.className}</span>
               <div className="w-full max-w-32 bg-gray-700 rounded-full h-2.5 ml-2">

@@ -62,9 +62,12 @@ const CameraControls: React.FC<CameraControlsProps> = ({
   }
   
   if (capturedImage) {
+    // Sort predictions by probability in descending order
+    const sortedPredictions = prediction ? [...prediction].sort((a, b) => b.probability - a.probability) : null;
+    
     // Show top prediction if available
-    const hasTopPrediction = prediction && prediction.length > 0;
-    const topPrediction = hasTopPrediction ? prediction[0] : null;
+    const hasTopPrediction = sortedPredictions && sortedPredictions.length > 0;
+    const topPrediction = hasTopPrediction ? sortedPredictions[0] : null;
     
     return (
       <div className="grid grid-cols-2 gap-4 w-full">
