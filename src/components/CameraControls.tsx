@@ -89,7 +89,7 @@ const CameraControls: React.FC<CameraControlsProps> = ({
           ) : topPrediction ? (
             <div className="flex flex-col items-center justify-center w-full">
               <span className="text-sm font-bold">{topPrediction.className}</span>
-              <span className="text-xs">{(topPrediction.probability * 100).toFixed(1)}%</span>
+              <span className="text-xs">{Math.round(topPrediction.probability * 100)}%</span>
             </div>
           ) : (
             <>

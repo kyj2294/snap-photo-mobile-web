@@ -20,7 +20,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
           <h3 className="text-white text-xl font-bold">최고 확률 결과</h3>
           <div className="flex items-center justify-between mt-2">
             <span className="text-white text-lg font-semibold">{topPrediction.className}</span>
-            <span className="text-white text-xl font-bold">{(topPrediction.probability * 100).toFixed(1)}%</span>
+            <span className="text-white text-xl font-bold">{Math.round(topPrediction.probability * 100)}%</span>
           </div>
         </div>
         
@@ -32,10 +32,10 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({ prediction }) => 
               <div className="w-full max-w-32 bg-gray-700 rounded-full h-2.5 ml-2">
                 <div 
                   className="bg-gradient-to-r from-blue-500 to-purple-500 h-2.5 rounded-full" 
-                  style={{ width: `${pred.probability * 100}%` }}
+                  style={{ width: `${Math.round(pred.probability * 100)}%` }}
                 ></div>
               </div>
-              <span className="text-white ml-2 text-sm">{(pred.probability * 100).toFixed(1)}%</span>
+              <span className="text-white ml-2 text-sm">{Math.round(pred.probability * 100)}%</span>
             </li>
           ))}
         </ul>
