@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from "react";
 import { Prediction } from "@/hooks/useImageClassifier";
-import { MapPin, AlertCircle, Recycle, Building } from "lucide-react";
+import { MapPin, Building } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+
 interface PredictionResultsProps {
   prediction: Prediction[] | null;
 }
@@ -17,15 +19,15 @@ interface RecyclingCenter {
   clctItemCn?: string;
   prkMthdExpln?: string; // 주차 방법 정보 추가
 }
+
 const PredictionResults: React.FC<PredictionResultsProps> = ({
   prediction
 }) => {
   const [recyclingCenters, setRecyclingCenters] = useState<RecyclingCenter[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedObjID, setSelectedObjID] = useState<string | null>(null);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+
   useEffect(() => {
     if (prediction && prediction.length > 0) {
       const fetchRecyclingCenters = async () => {
@@ -41,10 +43,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
           setSelectedObjID(predictedObjID);
 
           // objID가 예측 결과와 일치하는 재활용 센터를 찾습니다
-          const {
-            data,
-            error
-          } = await supabase.from('renewalcenter').select('objID, positnNm, positnRdnmAddr, bscTelnoCn, clctItemCn, prkMthdExpln').eq('objID', predictedObjID);
+          const { data, error } = await supabase.from('renewalcenter').select('objID, positnNm, positnRdnmAddr, bscTelnoCn, clctItemCn, prkMthdExpln').eq('objID', predictedObjID);
           if (error) {
             console.error('재활용 센터 정보 조회 오류:', error);
             toast({
@@ -66,10 +65,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
             }
             const limit = topPrediction.className === "볼펜" ? 5 : 3;
             query = query.limit(limit);
-            const {
-              data: fallbackData,
-              error: fallbackError
-            } = await query;
+            const { data: fallbackData, error: fallbackError } = await query;
             if (fallbackError) {
               console.error('대체 검색 오류:', fallbackError);
               toast({
@@ -109,6 +105,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
     // 새 탭에서 구글 맵 열기
     window.open(googleMapsUrl, '_blank', 'noopener,noreferrer');
   };
+  
   if (!prediction) return null;
 
   // 확률 기준으로 내림차순 정렬
@@ -149,12 +146,11 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
     tips: ["정확한 분리배출 방법은 지자체 홈페이지에서 확인할 수 있습니다"]
   };
 
-  // 분석된 물체에 대한 분리수거 가이드 정보
-  const guide = recyclingGuides[topPrediction.className] || defaultGuide;
-
   // 현재 예측 결과가 "볼펜"인지 확인
   const isItemPen = topPrediction.className === "볼펜";
-  return <div className="absolute inset-0 bg-black/50 backdrop-blur-sm p-4 flex flex-col justify-end">
+
+  return (
+    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm p-4 flex flex-col justify-end">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="p-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white">
           <h2 className="text-xl font-bold text-center mb-2">분석 결과</h2>
@@ -162,22 +158,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
             <div className="text-2xl font-bold">{topPrediction.className}</div>
             <div className="text-xl font-semibold">{Math.round(topPrediction.probability * 100)}%</div>
           </div>
-          
-          {/* 위치 정보 */}
-          <div className="flex items-center mt-1 text-sm opacity-85">
-            
-            
-          </div>
         </div>
-        
-        {/* 분리수거 방법 안내 */}
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 border-t border-b border-green-100 dark:border-green-800/30">
-          
-          
-        </div>
-        
-        {/* 알아두면 좋은 팁 */}
-        
         
         {/* 재활용 센터 정보 추가 */}
         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-100 dark:border-blue-800/30">
@@ -188,58 +169,81 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
             </h3>
           </div>
           
-          {isLoading ? <p className="text-gray-600 dark:text-gray-400 text-center py-2">재활용 센터 정보를 불러오는 중...</p> : recyclingCenters.length > 0 ? <ul className="space-y-3">
-              {recyclingCenters.map(center => <li key={center.objID} className="border-b border-gray-200 dark:border-gray-700 pb-2 last:border-0">
+          {isLoading ? (
+            <p className="text-gray-600 dark:text-gray-400 text-center py-2">재활용 센터 정보를 불러오는 중...</p>
+          ) : recyclingCenters.length > 0 ? (
+            <ul className="space-y-3">
+              {recyclingCenters.map(center => (
+                <li key={center.objID} className="border-b border-gray-200 dark:border-gray-700 pb-2 last:border-0">
                   <div className="font-semibold text-lg text-green-700 dark:text-green-500 cursor-pointer hover:text-green-600 hover:underline" onClick={() => center.positnRdnmAddr && openGoogleMaps(center.positnNm + ' ' + center.positnRdnmAddr)}>
                     {center.positnNm || "이름 없는 센터"} 
                     {center.objID === selectedObjID && <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">정확히 일치</span>}
                     {isItemPen && <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">볼펜 전문 수거</span>}
                   </div>
                   
-                  {center.clctItemCn}
-                  {center.positnRdnmAddr && <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center mt-1">
+                  {center.positnRdnmAddr && (
+                    <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center mt-1">
                       <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0 cursor-pointer hover:text-blue-500" onClick={() => openGoogleMaps(center.positnRdnmAddr || '')} />
                       <span className="cursor-pointer hover:text-blue-500 hover:underline" onClick={() => openGoogleMaps(center.positnRdnmAddr || '')}>
                         {center.positnRdnmAddr}
                       </span>
-                    </div>}
-                  {center.bscTelnoCn && <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
+                    </div>
+                  )}
+                  
+                  {center.bscTelnoCn && (
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
                       ☎️ {center.bscTelnoCn}
-                    </div>}
-                  {center.prkMthdExpln && <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
+                    </div>
+                  )}
+                  
+                  {center.prkMthdExpln && (
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
                       🚗 <span className="font-medium">주차:</span> {center.prkMthdExpln}
-                    </div>}
+                    </div>
+                  )}
+                  
                   <div className="mt-2">
                     <Button variant="outline" size="sm" className="text-xs" onClick={() => center.positnRdnmAddr && openGoogleMaps(center.positnNm + ' ' + center.positnRdnmAddr)}>
                       <MapPin className="w-3 h-3 mr-1" /> 구글 지도에서 보기
                     </Button>
                   </div>
-                </li>)}
-            </ul> : <p className="text-gray-600 dark:text-gray-400 text-center py-2">
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-600 dark:text-gray-400 text-center py-2">
               '{topPrediction.className}'에 대한 재활용 센터 정보가 없습니다.
-            </p>}
+            </p>
+          )}
         </div>
         
         {/* 다른 예측 결과들 */}
         <div className="p-4 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-700">
           <h3 className="text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">다른 가능성</h3>
           <ul className="space-y-2">
-            {sortedPredictions.slice(1, 3).map((pred, index) => <li key={index} className="flex justify-between items-center">
+            {sortedPredictions.slice(1, 3).map((pred, index) => (
+              <li key={index} className="flex justify-between items-center">
                 <span className="text-gray-800 dark:text-gray-200">{pred.className}</span>
                 <div className="flex items-center gap-2">
                   <div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full" style={{
-                  width: `${Math.round(pred.probability * 100)}%`
-                }}></div>
+                    <div 
+                      className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full" 
+                      style={{
+                        width: `${Math.round(pred.probability * 100)}%`
+                      }}
+                    ></div>
                   </div>
                   <span className="text-gray-700 dark:text-gray-300 text-sm w-10 text-right">
                     {Math.round(pred.probability * 100)}%
                   </span>
                 </div>
-              </li>)}
+              </li>
+            ))}
           </ul>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default PredictionResults;
