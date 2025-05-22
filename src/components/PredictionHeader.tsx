@@ -25,7 +25,7 @@ const PredictionHeader: React.FC<PredictionHeaderProps> = ({
   hasPoint
 }) => {
   return (
-    <div className="p-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+    <div className="p-4 bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 text-white">
       <h2 className="text-xl font-bold text-center mb-2">분석 결과</h2>
       <div className="flex items-center justify-between">
         <div className="text-2xl font-bold">{className}</div>

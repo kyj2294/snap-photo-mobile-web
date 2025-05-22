@@ -3,7 +3,7 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>RecycLens - 이미지 인식 재활용 가이드</title>
     <meta name="description" content="카메라로 촬영한 물체를 분석하여 재활용 정보를 제공하는 앱" />
     <meta name="author" content="Lovable" />
@@ -12,9 +12,10 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#10b981"> <!-- 테마 색상 설정 -->
     
     <!-- 배포 환경을 위한 보안 정책 설정 - Tensorflow.js와 모델 로드를 위한 설정 추가 -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' blob: data:; script-src * 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src * 'self' 'unsafe-inline'; img-src * 'self' data: blob: content:; connect-src * 'self' https://nominatim.openstreetmap.org https://*.tensorflow.org wasm-unsafe-eval: ws: wss:; font-src * 'self'; media-src * 'self' blob:; worker-src * blob: 'self'; manifest-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' blob: data:; script-src * 'self' 'unsafe-inline' 'unsafe-eval' blob: https://*.tensorflow.org https://*.teachablemachine.withgoogle.com; style-src * 'self' 'unsafe-inline'; img-src * 'self' data: blob: content:; connect-src * 'self' https://nominatim.openstreetmap.org https://*.tensorflow.org https://*.teachablemachine.withgoogle.com wasm-unsafe-eval: ws: wss:; font-src * 'self'; media-src * 'self' blob:; worker-src * blob: 'self'; manifest-src 'self';">
 
     <!-- 오픈 그래프 -->
     <meta property="og:title" content="RecycLens - 이미지 인식 재활용 가이드" />
@@ -37,6 +38,9 @@
     <!-- 모델 로딩 최적화를 위한 프리로딩 -->
     <link rel="preload" href="/model/model.json" as="fetch" crossorigin="anonymous">
     <link rel="preload" href="/model/metadata.json" as="fetch" crossorigin="anonymous">
+    
+    <!-- 앱 스타일 최적화 -->
+    <link rel="preload" href="/src/index.css" as="style">
   </head>
 
   <body>

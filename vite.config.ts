@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          model: ['@teachablemachine/image'] // 모델 관련 패키지를 별도 청크로 분리
+          tensorflow: ['@teachablemachine/image'] // 모델 관련 패키지를 별도 청크로 분리
         },
         // 파일 이름 패턴을 안정적으로 설정
         entryFileNames: 'assets/[name].[hash].js',
@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => ({
     minify: 'terser',
     terserOptions: {
       compress: {
-        // 개발 모드에서는 console을 유지
+        // 프로덕션 모드에서만 console 제거
         drop_console: mode !== 'development',
         drop_debugger: mode !== 'development'
       }

@@ -1,10 +1,11 @@
+
 import React, { useCallback } from 'react';
 import Camera from '@/components/Camera';
 import ThemeToggle from '@/components/ThemeToggle';
-import { MapPin, List, User, Camera as CameraIcon } from 'lucide-react';
-import { ImageIcon } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import NavigationBar from '@/components/NavigationBar';
+import { MapPin, ImageIcon } from 'lucide-react';
 import { useLocation } from '@/hooks/useLocation';
+
 const Index = () => {
   const {
     location,
@@ -29,7 +30,9 @@ const Index = () => {
       }
     };
   }, []);
-  return <div className="min-h-screen flex flex-col dark:bg-gray-900 bg-gray-100 transition-colors duration-300">
+
+  return (
+    <div className="min-h-screen flex flex-col dark:bg-gray-900 bg-gray-100 transition-colors duration-300 pb-20">
       <header className="bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 text-white p-6 relative">
         <div className="absolute top-4 right-4">
           <ThemeToggle />
@@ -57,9 +60,9 @@ const Index = () => {
       </main>
       
       {/* 하단 네비게이션 바 */}
-      <nav className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-2 px-4 fixed bottom-0 w-full">
-        
-      </nav>
-    </div>;
+      <NavigationBar />
+    </div>
+  );
 };
+
 export default Index;
