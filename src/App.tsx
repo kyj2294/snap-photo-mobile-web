@@ -12,8 +12,15 @@ import Rewards from "./pages/Rewards";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
-// QueryClient를 컴포넌트 외부에서 생성
-const queryClient = new QueryClient();
+// QueryClient를 컴포넌트 외부에서 명시적으로 생성
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false
+    }
+  }
+});
 
 // 함수형 컴포넌트로 명확하게 정의
 const App: React.FC = () => {
