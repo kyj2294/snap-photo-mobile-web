@@ -1,7 +1,11 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Camera as CameraIcon, Upload, RefreshCw, Loader2, Share, Save } from "lucide-react";
+import { Camera as CameraIcon, Upload, RefreshCw, Loader2, Share, Search } from "lucide-react";
 import { Prediction } from "@/hooks/useImageClassifier";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
 interface CameraControlsProps {
   cameraActive: boolean;
   capturedImage: string | null;
@@ -13,6 +17,7 @@ interface CameraControlsProps {
   onRetakePhoto: () => void;
   onClassifyImage: () => void;
 }
+
 const CameraControls: React.FC<CameraControlsProps> = ({
   cameraActive,
   capturedImage,
@@ -24,12 +29,50 @@ const CameraControls: React.FC<CameraControlsProps> = ({
   onRetakePhoto,
   onClassifyImage
 }) => {
+  const { toast } = useToast();
+  const [isCheckingPoints, setIsCheckingPoints] = React.useState(false);
+  const [pointAmount, setPointAmount] = React.useState<number | null>(null);
+
   // 확률 기준으로 내림차순 정렬
   const sortedPredictions = prediction ? [...prediction].sort((a, b) => b.probability - a.probability) : null;
 
   // 가장 높은 확률의 예측 결과
   const hasTopPrediction = sortedPredictions && sortedPredictions.length > 0;
   const topPrediction = hasTopPrediction ? sortedPredictions[0] : null;
+
+  const checkPoints = async () => {
+    if (!topPrediction) return;
+    
+    setIsCheckingPoints(true);
+    try {
+      const { data, error } = await supabase
+        .from('bigObject')
+        .select('objName, amount')
+        .eq('objName', topPrediction.className)
+        .single();
+      
+      if (error) {
+        console.error('포인트 조회 오류:', error);
+        setPointAmount(null);
+        toast({
+          title: "포인트 조회 결과",
+          description: "수수료 없음",
+        });
+      } else if (data) {
+        setPointAmount(data.amount);
+        toast({
+          title: "포인트 조회 결과",
+          description: `${data.objName}: ${data.amount || 0} 포인트`,
+          variant: "default"
+        });
+      }
+    } catch (error) {
+      console.error('포인트 조회 오류:', error);
+    } finally {
+      setIsCheckingPoints(false);
+    }
+  };
+
   if (!cameraActive && !capturedImage) {
     return <Button onClick={onStartCamera} disabled={modelLoading} className="h-16 w-full text-lg bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 border-none shadow-md">
         {modelLoading ? <>
@@ -56,9 +99,19 @@ const CameraControls: React.FC<CameraControlsProps> = ({
           </Button>
           
           <div className="grid grid-cols-2 gap-2">
-            <Button className="h-12 bg-green-600 hover:bg-green-700">
-              <Save className="h-4 w-4" />
-              <span className="ml-1">저장</span>
+            <Button 
+              className="h-12 bg-green-600 hover:bg-green-700"
+              onClick={checkPoints}
+              disabled={isCheckingPoints}
+            >
+              {isCheckingPoints ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <Search className="h-4 w-4" />
+                  <span className="ml-1">포인트 조회</span>
+                </>
+              )}
             </Button>
             
             

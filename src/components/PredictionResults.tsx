@@ -1,10 +1,12 @@
 
 import React, { useState, useEffect } from "react";
 import { Prediction } from "@/hooks/useImageClassifier";
-import { MapPin, Building, Phone, Clock } from "lucide-react";
+import { MapPin, Building, Phone, Clock, Coins } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
 interface PredictionResultsProps {
   prediction: Prediction[] | null;
 }
@@ -25,15 +27,58 @@ interface RecyclingCenter {
   satSalsHrExplnCn?: string; // 토요일 영업시간
   sunSalsHrExplnCn?: string; // 일요일 영업시간
 }
+
+// 포인트 정보를 위한 타입 정의
+interface PointInfo {
+  objName: string;
+  amount: number | null;
+}
+
 const PredictionResults: React.FC<PredictionResultsProps> = ({
   prediction
 }) => {
   const [recyclingCenters, setRecyclingCenters] = useState<RecyclingCenter[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedObjID, setSelectedObjID] = useState<string | null>(null);
+  const [pointInfo, setPointInfo] = useState<PointInfo | null>(null);
   const {
     toast
   } = useToast();
+
+  // 예측 결과에 따른 포인트 정보 조회
+  useEffect(() => {
+    if (prediction && prediction.length > 0) {
+      const fetchPointInfo = async () => {
+        try {
+          // 최상위 예측 결과 가져오기
+          const sortedPredictions = [...prediction].sort((a, b) => b.probability - a.probability);
+          const topPrediction = sortedPredictions[0];
+
+          // 예측된 objName으로 포인트 정보 조회
+          const { data, error } = await supabase
+            .from('bigObject')
+            .select('objName, amount')
+            .eq('objName', topPrediction.className);
+
+          if (error) {
+            console.error('포인트 정보 조회 오류:', error);
+          } else if (data && data.length > 0) {
+            setPointInfo(data[0]);
+          } else {
+            setPointInfo({
+              objName: topPrediction.className,
+              amount: null
+            });
+          }
+        } catch (error) {
+          console.error('포인트 정보 조회 오류:', error);
+        }
+      };
+
+      fetchPointInfo();
+    }
+  }, [prediction]);
+
   useEffect(() => {
     if (prediction && prediction.length > 0) {
       const fetchRecyclingCenters = async () => {
@@ -214,6 +259,19 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
             <div className="text-2xl font-bold">{topPrediction.className}</div>
             <div className="text-xl font-semibold">{Math.round(topPrediction.probability * 100)}%</div>
           </div>
+          
+          {/* 포인트 정보 표시 추가 */}
+          {pointInfo && (
+            <div className="mt-2 p-2 bg-white/20 rounded-md flex items-center justify-between">
+              <div className="flex items-center">
+                <Coins className="w-5 h-5 mr-2" />
+                <span className="font-medium">수수료 포인트:</span>
+              </div>
+              <div className="font-bold">
+                {pointInfo.amount !== null ? `${pointInfo.amount} 포인트` : "수수료 없음"}
+              </div>
+            </div>
+          )}
         </div>
         
         {/* 재활용 센터 정보 추가 */}
@@ -259,8 +317,25 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
             </p>}
         </div>
         
-        {/* 다른 예측 결과들 */}
-        
+        {/* 포인트 정보 테이블로 표시 (별도 섹션) */}
+        {pointInfo && (
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+            <Table className="w-full">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>항목</TableHead>
+                  <TableHead className="text-right">수수료 (포인트)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">{pointInfo.objName}</TableCell>
+                  <TableCell className="text-right">{pointInfo.amount !== null ? pointInfo.amount : "수수료 없음"}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </div>
     </div>;
 };
