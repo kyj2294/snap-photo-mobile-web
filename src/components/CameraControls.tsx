@@ -46,47 +46,49 @@ const CameraControls: React.FC<CameraControlsProps> = ({
     
     setIsCheckingPoints(true);
     try {
-      // bigObject 테이블에서 포인트 정보 조회
-      const { data: objData, error: objError } = await supabase
-        .from('bigObject')
-        .select('objName, amount')
-        .eq('objName', topPrediction.className)
-        .single();
-      
-      // renewalCenter 테이블에서 포인트 정보 조회
-      const { data: centerData, error: centerError } = await supabase
-        .from('renewalcenter')
-        .select('objID, point')
-        .eq('objID', topPrediction.className)
-        .single();
-
-      if (objError && centerError) {
-        console.error('포인트 조회 오류:', objError, centerError);
-        setPointAmount(null);
-        setCenterPoint(null);
-        toast({
-          title: "포인트 조회 결과",
-          description: "수수료 없음",
-        });
-      } else {
-        // bigObject에서 조회된 정보가 있으면 사용
+      // 오류 처리 개선 - 데이터베이스 연결에 실패해도 앱은 계속 작동
+      try {
+        // bigObject 테이블에서 포인트 정보 조회
+        const { data: objData, error: objError } = await supabase
+          .from('bigObject')
+          .select('objName, amount')
+          .eq('objName', topPrediction.className)
+          .single();
+        
         if (objData) {
           setPointAmount(objData.amount);
         }
         
-        // renewalCenter에서 조회된 정보가 있으면 사용
+        // renewalCenter 테이블에서 포인트 정보 조회
+        const { data: centerData, error: centerError } = await supabase
+          .from('renewalcenter')
+          .select('objID, point')
+          .eq('objID', topPrediction.className)
+          .single();
+        
         if (centerData) {
           setCenterPoint(centerData.point);
         }
-        
+      
         toast({
           title: "포인트 조회 결과",
           description: `${topPrediction.className}: ${(objData?.amount || 0) + (centerData?.point || 0)} 포인트`,
           variant: "default"
         });
+      } catch (dbError) {
+        console.error('포인트 조회 오류 (DB):', dbError);
+        toast({
+          title: "포인트 조회 결과",
+          description: "수수료 없음 (데이터베이스 연결 실패)",
+        });
       }
     } catch (error) {
       console.error('포인트 조회 오류:', error);
+      toast({
+        title: "오류 발생",
+        description: "포인트 정보를 조회하는 중 문제가 발생했습니다.",
+        variant: "destructive"
+      });
     } finally {
       setIsCheckingPoints(false);
     }
