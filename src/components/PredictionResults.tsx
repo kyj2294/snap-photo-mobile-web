@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Prediction } from "@/hooks/useImageClassifier";
 import { MapPin, Building, Phone, Clock, Coins } from "lucide-react";
@@ -265,7 +264,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
             <div className="mt-2 p-2 bg-white/20 rounded-md flex items-center justify-between">
               <div className="flex items-center">
                 <Coins className="w-5 h-5 mr-2" />
-                <span className="font-medium">수수료 포인트:</span>
+                <span className="font-medium">수거 수수료:</span>
               </div>
               <div className="font-bold">
                 {pointInfo.amount !== null ? `${pointInfo.amount} 포인트` : "수수료 없음"}
@@ -324,7 +323,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
               <TableHeader>
                 <TableRow>
                   <TableHead>항목</TableHead>
-                  <TableHead className="text-right">수수료 (포인트)</TableHead>
+                  <TableHead className="text-right">수거 수수료 (포인트)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
