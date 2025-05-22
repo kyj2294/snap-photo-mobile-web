@@ -94,7 +94,14 @@ export function useLocation() {
       if (!navigator.geolocation) {
         setLocationState({
           loading: false,
-          location: { latitude: null, longitude: null, address: "위치 정보 지원 불가" },
+          location: { 
+            latitude: null, 
+            longitude: null, 
+            address: {
+              city: "위치 정보 지원 불가",
+              city_district: ""
+            } 
+          },
           error: "이 브라우저는 위치 정보를 지원하지 않습니다."
         });
         toast({
@@ -130,7 +137,14 @@ export function useLocation() {
           
           setLocationState({
             loading: false,
-            location: { latitude: null, longitude: null, address: "위치 확인 불가" },
+            location: { 
+              latitude: null, 
+              longitude: null, 
+              address: {
+                city: "위치 확인 불가",
+                city_district: ""
+              } 
+            },
             error: errorMessage
           });
           
