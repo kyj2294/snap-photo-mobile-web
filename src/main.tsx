@@ -10,12 +10,7 @@ const rootElement = document.getElementById("root");
 if (rootElement) {
   const root = createRoot(rootElement);
 
-  root.render(
-    // React 18에서는 StrictMode를 다시 추가해도 안정적입니다
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
+  root.render(<App />);
 } else {
   console.error("루트 요소를 찾을 수 없습니다. ID가 'root'인 요소가 HTML에 있는지 확인하세요.");
 }

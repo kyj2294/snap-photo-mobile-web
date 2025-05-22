@@ -26,7 +26,7 @@ const queryClient = new QueryClient({
 // 함수형 컴포넌트 명확하게 정의
 const App: React.FC = () => {
   return (
-    <React.Fragment>
+    <>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <TooltipProvider>
@@ -45,7 +45,7 @@ const App: React.FC = () => {
           </TooltipProvider>
         </ThemeProvider>
       </QueryClientProvider>
-    </React.Fragment>
+    </>
   );
 };
 
