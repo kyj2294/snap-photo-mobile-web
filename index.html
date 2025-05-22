@@ -13,8 +13,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <!-- 콘텐츠 보안 정책 조정 -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval';">
+    <!-- 콘텐츠 보안 정책 조정 - 더 유연하게 설정 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' data: blob: 'unsafe-inline' 'unsafe-eval'; script-src * 'self' 'unsafe-inline' 'unsafe-eval'; connect-src * 'self' https: wss:; img-src * 'self' data: blob:; worker-src * 'self' blob:;">
 
     <meta property="og:title" content="RecycLens - 이미지 인식 재활용 가이드" />
     <meta property="og:description" content="카메라로 촬영한 물체를 분석하여 재활용 정보를 제공하는 앱" />

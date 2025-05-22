@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: "./", // 상대 경로로 배포하여 모든 환경에서 작동하도록 설정
+  base: "/", // 절대 경로로 변경하여 배포 환경에서도 정상 작동하도록 설정
   build: {
     outDir: "dist",
     assetsDir: "assets",
@@ -24,6 +24,8 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
+  // public 폴더의 파일을 그대로 dist로 복사
+  publicDir: 'public',
   plugins: [
     react(),
     mode === 'development' &&

@@ -155,10 +155,71 @@ export type Database = {
           },
         ]
       }
+      quest_stat: {
+        Row: {
+          created_at: string | null
+          id: number
+          last_used: string | null
+          llm_cd: string
+          quest_count: number | null
+          token_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          last_used?: string | null
+          llm_cd: string
+          quest_count?: number | null
+          token_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          last_used?: string | null
+          llm_cd?: string
+          quest_count?: number | null
+          token_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      quest_stat_daily: {
+        Row: {
+          created_at: string | null
+          id: number
+          llm_cd: string
+          quest_count: number | null
+          stat_date: string
+          token_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: never
+          llm_cd: string
+          quest_count?: number | null
+          stat_date: string
+          token_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: never
+          llm_cd?: string
+          quest_count?: number | null
+          stat_date?: string
+          token_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       QuestLaw: {
         Row: {
           answer_cn: string | null
           id: number
+          llm_cd: string | null
           point: number | null
           quest_cn: string | null
           quest_dt: string
@@ -167,6 +228,7 @@ export type Database = {
         Insert: {
           answer_cn?: string | null
           id?: number
+          llm_cd?: string | null
           point?: number | null
           quest_cn?: string | null
           quest_dt?: string
@@ -175,6 +237,7 @@ export type Database = {
         Update: {
           answer_cn?: string | null
           id?: number
+          llm_cd?: string | null
           point?: number | null
           quest_cn?: string | null
           quest_dt?: string

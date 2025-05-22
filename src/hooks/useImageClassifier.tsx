@@ -8,9 +8,9 @@ export interface Prediction {
   probability: number;
 }
 
-// 모델 URL을 상대 경로로 설정 (배포 환경 고려)
-const MODEL_URL = "./model/model.json";
-const METADATA_URL = "./model/metadata.json";
+// 모델 URL을 절대 경로로 변경 (배포 환경 고려)
+const MODEL_URL = "/model/model.json";
+const METADATA_URL = "/model/metadata.json";
 
 export function useImageClassifier() {
   const [model, setModel] = useState<tmImage.CustomMobileNet | null>(null);
@@ -25,7 +25,7 @@ export function useImageClassifier() {
   useEffect(() => {
     const loadModel = async () => {
       // 이미 모델이 로드되었거나 로드 시도 중이면 다시 시도하지 않음
-      if (model || modelLoading || modelLoadAttempts >= 3) { // 최대 시도 횟수 3회로 증가
+      if (model || modelLoading || modelLoadAttempts >= 3) {
         return;
       }
 
@@ -40,11 +40,13 @@ export function useImageClassifier() {
         try {
           const modelResponse = await fetch(MODEL_URL);
           if (!modelResponse.ok) {
+            console.error(`모델 파일 로드 실패: ${modelResponse.status} - ${modelResponse.statusText}`);
             throw new Error(`모델 파일을 로드할 수 없습니다: ${modelResponse.status}`);
           }
           
           const metadataResponse = await fetch(METADATA_URL);
           if (!metadataResponse.ok) {
+            console.error(`메타데이터 파일 로드 실패: ${metadataResponse.status} - ${metadataResponse.statusText}`);
             throw new Error(`메타데이터 파일을 로드할 수 없습니다: ${metadataResponse.status}`);
           }
           
@@ -62,6 +64,7 @@ export function useImageClassifier() {
         });
         
         // 모델 로딩 시도
+        console.log("모델 로드 시작...");
         const loadPromise = tmImage.load(MODEL_URL, METADATA_URL);
         
         // 타임아웃과 로드 중 먼저 완료되는 작업 처리
@@ -91,7 +94,7 @@ export function useImageClassifier() {
           toast({
             title: "모델 로드 오류",
             description: "이미지 분류 모델을 불러오는데 실패했습니다. 모델 없이 진행합니다.",
-            variant: "destructive", // "warning"을 "destructive"로 변경
+            variant: "destructive",
           });
         }
       } finally {
@@ -115,7 +118,7 @@ export function useImageClassifier() {
       toast({
         title: "모델이 로드되지 않음",
         description: "이미지 분류 모델이 아직 준비되지 않았습니다. 모델 없이 진행합니다.",
-        variant: "default", // "warning"을 "default"로 변경
+        variant: "default",
       });
       // 모델이 없어도 기본 UI 흐름은 유지되도록 함
       return null;
