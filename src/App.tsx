@@ -19,11 +19,10 @@ const queryClient = new QueryClient({
       staleTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
     },
-  },
-  logger: {
-    log: console.log,
-    warn: console.warn,
-    error: console.error,
+    mutations: {
+      // 오류 발생 시 기본 로깅 활성화
+      onError: (err) => console.error("Mutation error:", err)
+    }
   }
 });
 

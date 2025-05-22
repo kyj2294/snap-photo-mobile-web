@@ -43,7 +43,13 @@ const Index = () => {
         {location && (
           <div className="mt-3 flex items-center justify-center text-xs opacity-75">
             <MapPin className="w-3 h-3 mr-1" />
-            <span>{location.address || '위치 정보 사용 가능'}</span>
+            <span>
+              {typeof location.address === 'string' 
+                ? location.address 
+                : location.address?.city 
+                  ? `${location.address.city}${location.address.city_district ? ` ${location.address.city_district}` : ''}`
+                  : '위치 정보 사용 가능'}
+            </span>
           </div>
         )}
         
