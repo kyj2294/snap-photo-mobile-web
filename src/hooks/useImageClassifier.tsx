@@ -91,7 +91,7 @@ export function useImageClassifier() {
           toast({
             title: "모델 로드 오류",
             description: "이미지 분류 모델을 불러오는데 실패했습니다. 모델 없이 진행합니다.",
-            variant: "destructive",
+            variant: "destructive", // "warning"을 "destructive"로 변경
           });
         }
       } finally {
@@ -115,7 +115,7 @@ export function useImageClassifier() {
       toast({
         title: "모델이 로드되지 않음",
         description: "이미지 분류 모델이 아직 준비되지 않았습니다. 모델 없이 진행합니다.",
-        variant: "warning",
+        variant: "default", // "warning"을 "default"로 변경
       });
       // 모델이 없어도 기본 UI 흐름은 유지되도록 함
       return null;
