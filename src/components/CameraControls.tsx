@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Camera as CameraIcon, Upload, RefreshCw, Loader2, Share, Search } from "lucide-react";
+import { Camera as CameraIcon, Upload, RefreshCw, Loader2, Search } from "lucide-react";
 import { Prediction } from "@/hooks/useImageClassifier";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +32,7 @@ const CameraControls: React.FC<CameraControlsProps> = ({
   const { toast } = useToast();
   const [isCheckingPoints, setIsCheckingPoints] = React.useState(false);
   const [pointAmount, setPointAmount] = React.useState<number | null>(null);
+  const [centerPoint, setCenterPoint] = React.useState<number | null>(null);
 
   // 확률 기준으로 내림차순 정렬
   const sortedPredictions = prediction ? [...prediction].sort((a, b) => b.probability - a.probability) : null;
@@ -45,24 +46,42 @@ const CameraControls: React.FC<CameraControlsProps> = ({
     
     setIsCheckingPoints(true);
     try {
-      const { data, error } = await supabase
+      // bigObject 테이블에서 포인트 정보 조회
+      const { data: objData, error: objError } = await supabase
         .from('bigObject')
         .select('objName, amount')
         .eq('objName', topPrediction.className)
         .single();
       
-      if (error) {
-        console.error('포인트 조회 오류:', error);
+      // renewalCenter 테이블에서 포인트 정보 조회
+      const { data: centerData, error: centerError } = await supabase
+        .from('renewalcenter')
+        .select('objID, point')
+        .eq('objID', topPrediction.className)
+        .single();
+
+      if (objError && centerError) {
+        console.error('포인트 조회 오류:', objError, centerError);
         setPointAmount(null);
+        setCenterPoint(null);
         toast({
           title: "포인트 조회 결과",
           description: "수수료 없음",
         });
-      } else if (data) {
-        setPointAmount(data.amount);
+      } else {
+        // bigObject에서 조회된 정보가 있으면 사용
+        if (objData) {
+          setPointAmount(objData.amount);
+        }
+        
+        // renewalCenter에서 조회된 정보가 있으면 사용
+        if (centerData) {
+          setCenterPoint(centerData.point);
+        }
+        
         toast({
           title: "포인트 조회 결과",
-          description: `${data.objName}: ${data.amount || 0} 포인트`,
+          description: `${topPrediction.className}: ${(objData?.amount || centerData?.point || 0)} 포인트`,
           variant: "default"
         });
       }

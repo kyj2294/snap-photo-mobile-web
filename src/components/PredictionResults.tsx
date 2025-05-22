@@ -25,12 +25,14 @@ interface RecyclingCenter {
   friSalsHrExplnCn?: string; // 금요일 영업시간
   satSalsHrExplnCn?: string; // 토요일 영업시간
   sunSalsHrExplnCn?: string; // 일요일 영업시간
+  point?: number | null; // 재활용 센터의 포인트 정보
 }
 
 // 포인트 정보를 위한 타입 정의
 interface PointInfo {
   objName: string;
   amount: number | null;
+  centerPoint?: number | null; // renewalCenter의 point 정보
 }
 
 const PredictionResults: React.FC<PredictionResultsProps> = ({
@@ -53,21 +55,29 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
           const sortedPredictions = [...prediction].sort((a, b) => b.probability - a.probability);
           const topPrediction = sortedPredictions[0];
 
-          // 예측된 objName으로 포인트 정보 조회
-          const { data, error } = await supabase
+          // 예측된 objName으로 포인트 정보 조회 (bigObject 테이블)
+          const { data: objData, error: objError } = await supabase
             .from('bigObject')
             .select('objName, amount')
             .eq('objName', topPrediction.className);
 
-          if (error) {
-            console.error('포인트 정보 조회 오류:', error);
-          } else if (data && data.length > 0) {
-            setPointInfo(data[0]);
+          // renewalCenter 테이블에서 포인트 정보 조회
+          const { data: centerData, error: centerError } = await supabase
+            .from('renewalcenter')
+            .select('objID, point')
+            .eq('objID', topPrediction.className);
+
+          if (objError && centerError) {
+            console.error('포인트 정보 조회 오류:', objError, centerError);
           } else {
-            setPointInfo({
+            // 포인트 정보 설정
+            const pointData = {
               objName: topPrediction.className,
-              amount: null
-            });
+              amount: objData && objData.length > 0 ? objData[0].amount : null,
+              centerPoint: centerData && centerData.length > 0 ? centerData[0].point : null
+            };
+            
+            setPointInfo(pointData);
           }
         } catch (error) {
           console.error('포인트 정보 조회 오류:', error);
@@ -88,7 +98,6 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
           const topPrediction = sortedPredictions[0];
 
           // 예측 결과를 objID로 간주하여 쿼리
-          // 실제 구현에서는 예측 결과를 기반으로 objID를 결정하는 로직이 필요합니다
           const predictedObjID = topPrediction.className;
           setSelectedObjID(predictedObjID);
 
@@ -96,7 +105,8 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
           const {
             data,
             error
-          } = await supabase.from('renewalcenter').select('objID, positnNm, positnRdnmAddr, bscTelnoCn, clctItemCn, prkMthdExpln, monSalsHrExplnCn, tuesSalsHrExplnCn, wedSalsHrExplnCn, thurSalsHrExplnCn, friSalsHrExplnCn, satSalsHrExplnCn, sunSalsHrExplnCn').eq('objID', predictedObjID);
+          } = await supabase.from('renewalcenter').select('objID, positnNm, positnRdnmAddr, bscTelnoCn, clctItemCn, prkMthdExpln, monSalsHrExplnCn, tuesSalsHrExplnCn, wedSalsHrExplnCn, thurSalsHrExplnCn, friSalsHrExplnCn, satSalsHrExplnCn, sunSalsHrExplnCn, point').eq('objID', predictedObjID);
+          
           if (error) {
             console.error('재활용 센터 정보 조회 오류:', error);
             toast({
@@ -108,7 +118,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
             setRecyclingCenters(data);
           } else {
             // objID로 정확히 찾을 수 없는 경우 이전 방식으로 검색
-            let query = supabase.from('renewalcenter').select('objID, positnNm, positnRdnmAddr, bscTelnoCn, clctItemCn, prkMthdExpln, monSalsHrExplnCn, tuesSalsHrExplnCn, wedSalsHrExplnCn, thurSalsHrExplnCn, friSalsHrExplnCn, satSalsHrExplnCn, sunSalsHrExplnCn');
+            let query = supabase.from('renewalcenter').select('objID, positnNm, positnRdnmAddr, bscTelnoCn, clctItemCn, prkMthdExpln, monSalsHrExplnCn, tuesSalsHrExplnCn, wedSalsHrExplnCn, thurSalsHrExplnCn, friSalsHrExplnCn, satSalsHrExplnCn, sunSalsHrExplnCn, point');
             if (topPrediction.className === "볼펜") {
               query = query.or(`clctItemCn.ilike.%볼펜%,clctItemCn.ilike.%필기구%`);
             } else if (topPrediction.className === "커피컵") {
@@ -250,6 +260,12 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
 
   // 현재 예측 결과가 "볼펜"인지 확인
   const isItemPen = topPrediction.className === "볼펜";
+
+  // 포인트 정보 계산
+  const totalPoint = pointInfo ? (pointInfo.amount !== null ? pointInfo.amount : 0) + 
+                               (pointInfo.centerPoint !== null ? pointInfo.centerPoint : 0) : 0;
+  const hasPoint = totalPoint > 0 || (pointInfo && (pointInfo.amount !== null || pointInfo.centerPoint !== null));
+
   return <div className="absolute inset-0 bg-black/50 backdrop-blur-sm p-4 flex flex-col justify-end">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div className="p-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white">
@@ -267,7 +283,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
                 <span className="font-medium">수거 수수료:</span>
               </div>
               <div className="font-bold">
-                {pointInfo.amount !== null ? `${pointInfo.amount} 포인트` : "수수료 없음"}
+                {hasPoint ? `${totalPoint} 포인트` : "수수료 없음"}
               </div>
             </div>
           )}
@@ -290,6 +306,15 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
                     {isItemPen && <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">볼펜 전문 수거</span>}
                   </div>
                   
+                  {/* 센터 포인트 정보 표시 */}
+                  {center.point !== null && center.point > 0 && (
+                    <div className="text-sm text-blue-600 dark:text-blue-400 mt-0.5 flex items-center">
+                      <Coins className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
+                      <span>포인트: {center.point}</span>
+                    </div>
+                  )}
+                  
+                  {/* 나머지 센터 정보 표시 */}
                   {center.positnRdnmAddr && <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center mt-1">
                       <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0 cursor-pointer hover:text-blue-500" onClick={() => openGoogleMaps(center.positnRdnmAddr || '')} />
                       <span className="cursor-pointer hover:text-blue-500 hover:underline" onClick={() => openGoogleMaps(center.positnRdnmAddr || '')}>
@@ -329,7 +354,19 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
               <TableBody>
                 <TableRow>
                   <TableCell className="font-medium">{pointInfo.objName}</TableCell>
-                  <TableCell className="text-right">{pointInfo.amount !== null ? pointInfo.amount : "수수료 없음"}</TableCell>
+                  <TableCell className="text-right">
+                    {hasPoint ? (
+                      <div>
+                        {pointInfo.amount !== null && (
+                          <div>기본 수수료: {pointInfo.amount}</div>
+                        )}
+                        {pointInfo.centerPoint !== null && pointInfo.centerPoint > 0 && (
+                          <div>센터 추가 수수료: {pointInfo.centerPoint}</div>
+                        )}
+                        <div className="font-bold mt-1 pt-1 border-t">합계: {totalPoint}</div>
+                      </div>
+                    ) : "수수료 없음"}
+                  </TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -338,4 +375,28 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
       </div>
     </div>;
 };
+
+// 구글 맵에서 위치 보기 기능
+const openGoogleMaps = (address: string) => {
+  if (!address) return;
+
+  // 주소를 URL 인코딩하여 구글 맵 URL 생성
+  const encodedAddress = encodeURIComponent(address);
+  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+
+  // 새 탭에서 구글 맵 열기
+  window.open(googleMapsUrl, '_blank', 'noopener,noreferrer');
+};
+
+// 전화 걸기 기능 추가
+const makePhoneCall = (phoneNumber: string) => {
+  if (!phoneNumber) return;
+
+  // 전화번호에서 괄호와 하이픈 등 특수문자 제거
+  const cleanPhoneNumber = phoneNumber.replace(/[^\d+]/g, '');
+
+  // tel: 프로토콜을 사용하여 전화 걸기
+  window.location.href = `tel:${cleanPhoneNumber}`;
+};
+
 export default PredictionResults;
