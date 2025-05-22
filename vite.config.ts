@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: "dist",
     assetsDir: "assets",
-    // 모델 파일을 직접 복사하도록 설정 - 인라인 제한 조정
+    // 모델 파일을 직접 복사하도록 설정
     assetsInlineLimit: 0, // 모든 에셋이 개별 파일로 생성되도록 설정
     rollupOptions: {
       output: {
@@ -22,12 +22,24 @@ export default defineConfig(({ mode }) => ({
           vendor: ['react', 'react-dom', 'react-router-dom'],
           model: ['@teachablemachine/image'] // 모델 관련 패키지를 별도 청크로 분리
         },
+        // 파일 이름 패턴을 안정적으로 설정
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]'
       },
     },
     // 배포 환경에서 소스맵 비활성화
     sourcemap: false,
+    // minify 옵션 추가
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
   },
-  // public 폴더의 파일을 그대로 dist로 복사 - 명시적으로 설정
+  // public 폴더의 파일을 그대로 dist로 복사
   publicDir: 'public',
   plugins: [
     react(),

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import Camera from '@/components/Camera';
 import ThemeToggle from '@/components/ThemeToggle';
 import { MapPin, List, User, Camera as CameraIcon } from 'lucide-react';
@@ -13,7 +13,27 @@ const Index = () => {
     loading
   } = useLocation();
   
-  return <div className="min-h-screen flex flex-col dark:bg-gray-900 bg-gray-100 transition-colors duration-300">
+  // 갤러리에서 이미지 선택 핸들러
+  const handleGallerySelect = useCallback(() => {
+    // 파일 선택 다이얼로그 생성
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.click();
+    
+    // 파일 선택 이벤트 핸들러
+    input.onchange = (e) => {
+      const files = (e.target as HTMLInputElement).files;
+      if (files && files.length > 0) {
+        // 선택한 파일을 처리할 수 있는 로직 추가 가능
+        console.log('Selected file:', files[0]);
+        // 여기에서 파일을 처리하는 로직을 추가할 수 있습니다
+      }
+    };
+  }, []);
+  
+  return (
+    <div className="min-h-screen flex flex-col dark:bg-gray-900 bg-gray-100 transition-colors duration-300">
       <header className="bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 text-white p-6 relative">
         <div className="absolute top-4 right-4">
           <ThemeToggle />
@@ -40,7 +60,10 @@ const Index = () => {
         </div>
         
         {/* 갤러리에서 선택 버튼 */}
-        <button className="w-full max-w-md py-4 flex items-center justify-center gap-2 bg-green-50 dark:bg-green-950/20 text-green-800 dark:text-green-300 rounded-xl border border-green-100 dark:border-green-900/30">
+        <button 
+          onClick={handleGallerySelect}
+          className="w-full max-w-md py-4 flex items-center justify-center gap-2 bg-green-50 dark:bg-green-950/20 text-green-800 dark:text-green-300 rounded-xl border border-green-100 dark:border-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
+        >
           <ImageIcon size={20} />
           <span>갤러리에서 선택</span>
         </button>
@@ -65,7 +88,8 @@ const Index = () => {
           </Link>
         </div>
       </nav>
-    </div>;
+    </div>
+  );
 };
 
 export default Index;

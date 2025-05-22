@@ -13,14 +13,16 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <!-- 콘텐츠 보안 정책 완전히 완화 - 배포 환경 문제 해결을 위해 -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval' 'unsafe-inline'; style-src * 'self' 'unsafe-inline'; media-src * 'self' blob: 'unsafe-inline'; img-src * 'self' data: blob: content:; connect-src * 'self' ws: wss:; worker-src * 'self' blob:;">
+    <!-- 배포 환경을 위한 보안 정책 설정 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' blob:; script-src * 'self' 'unsafe-inline' 'unsafe-eval'; style-src * 'self' 'unsafe-inline'; img-src * 'self' data: blob: content:; connect-src * 'self' https://nominatim.openstreetmap.org ws: wss:; font-src * 'self'; media-src * 'self' blob:; worker-src * blob: 'self';">
 
+    <!-- 오픈 그래프 -->
     <meta property="og:title" content="RecycLens - 이미지 인식 재활용 가이드" />
     <meta property="og:description" content="카메라로 촬영한 물체를 분석하여 재활용 정보를 제공하는 앱" />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
+    <!-- 트위터 카드 -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
@@ -28,6 +30,9 @@
     <!-- 앱 아이콘 -->
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/favicon.ico">
+    
+    <!-- PWA 매니페스트 -->
+    <link rel="manifest" href="/manifest.json">
   </head>
 
   <body>

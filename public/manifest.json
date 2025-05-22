@@ -1,0 +1,17 @@
+
+{
+  "name": "RecycLens - 이미지 인식 재활용 가이드",
+  "short_name": "RecycLens",
+  "description": "카메라로 촬영한 물체를 분석하여 재활용 정보를 제공하는 앱",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#34d399",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

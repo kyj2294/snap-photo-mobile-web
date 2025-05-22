@@ -33,42 +33,8 @@ export function useImageClassifier() {
         setModelLoading(true);
         setModelLoadAttempted(true);
         
-        console.log("모델 로드 시도 #" + (modelLoadAttempts + 1));
-        console.log("모델 로드 경로:", MODEL_URL, METADATA_URL);
-        
-        // 먼저 파일 접근 가능한지 확인
-        try {
-          const modelResponse = await fetch(MODEL_URL);
-          if (!modelResponse.ok) {
-            console.error(`모델 파일 로드 실패: ${modelResponse.status} - ${modelResponse.statusText}`);
-            throw new Error(`모델 파일을 로드할 수 없습니다: ${modelResponse.status}`);
-          }
-          
-          const metadataResponse = await fetch(METADATA_URL);
-          if (!metadataResponse.ok) {
-            console.error(`메타데이터 파일 로드 실패: ${metadataResponse.status} - ${metadataResponse.statusText}`);
-            throw new Error(`메타데이터 파일을 로드할 수 없습니다: ${metadataResponse.status}`);
-          }
-          
-          // 메타데이터 확인
-          const metadata = await metadataResponse.json();
-          console.log("메타데이터 로드 완료:", metadata);
-        } catch (fetchError) {
-          console.error("파일 접근 오류:", fetchError);
-          throw fetchError;
-        }
-        
-        // 모델 로드 타임아웃 설정 - 15초 후에 실패로 간주 (배포 환경에서 더 짧게 설정)
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error("모델 로드 타임아웃")), 15000);
-        });
-        
-        // 모델 로딩 시도
-        console.log("모델 로드 시작...");
-        const loadPromise = tmImage.load(MODEL_URL, METADATA_URL);
-        
-        // 타임아웃과 로드 중 먼저 완료되는 작업 처리
-        const loadedModel = await Promise.race([loadPromise, timeoutPromise]) as tmImage.CustomMobileNet;
+        // 모델 로드 시도
+        const loadedModel = await tmImage.load(MODEL_URL, METADATA_URL);
         console.log("모델 로드 완료!");
         
         setModel(loadedModel);
@@ -87,7 +53,7 @@ export function useImageClassifier() {
           toast({
             title: "모델 로드 재시도 중",
             description: "모델 로드에 실패했습니다. 다시 시도합니다.",
-            variant: "default" // "warning" 대신 "default" 사용
+            variant: "default"
           });
           
           // 재시도 전 약간의 지연 시간 설정
@@ -95,7 +61,7 @@ export function useImageClassifier() {
         } else {
           toast({
             title: "모델 로드 오류",
-            description: "이미지 분류 모델을 불러오는데 실패했습니다. 모델 없이 진행합니다.",
+            description: "이미지 분류 모델을 불러오는데 실패했습니다. 앱을 재시작해보세요.",
             variant: "destructive"
           });
         }
@@ -119,10 +85,9 @@ export function useImageClassifier() {
     if (!model) {
       toast({
         title: "모델이 로드되지 않음",
-        description: "이미지 분류 모델이 아직 준비되지 않았습니다. 모델 없이 진행합니다.",
+        description: "이미지 분류 모델이 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.",
         variant: "default"
       });
-      // 모델이 없어도 기본 UI 흐름은 유지되도록 함
       return null;
     }
     
@@ -146,6 +111,7 @@ export function useImageClassifier() {
       toast({
         title: "이미지 분류 완료",
         description: `가장 높은 확률: ${predictions[0].className} (${(predictions[0].probability * 100).toFixed(2)}%)`,
+        variant: "default"
       });
       
       return predictions;
@@ -162,6 +128,16 @@ export function useImageClassifier() {
     }
   };
 
+  // 모델 다시 로드 함수 추가 - 사용자가 수동으로 재시도할 수 있도록
+  const reloadModel = () => {
+    if (!modelLoading) {
+      setModel(null);
+      setModelLoadAttempted(false);
+      setModelLoadAttempts(0);
+      // 모델 로드는 useEffect에서 자동으로 시작됨
+    }
+  };
+
   return {
     model,
     modelLoading,
@@ -169,6 +145,7 @@ export function useImageClassifier() {
     predicting,
     prediction,
     setPrediction,
-    classifyImage
+    classifyImage,
+    reloadModel
   };
 }
