@@ -2,12 +2,18 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
+interface AddressData {
+  city: string;
+  city_district?: string;
+  [key: string]: any; // 기타 가능한 필드들을 위한 인덱스 시그니처
+}
+
 interface LocationState {
   loading: boolean;
   location: {
     latitude: number | null;
     longitude: number | null;
-    address: string;
+    address: AddressData;
   };
   error: string | null;
 }
@@ -18,7 +24,10 @@ export function useLocation() {
     location: {
       latitude: null,
       longitude: null,
-      address: "위치 정보를 가져오는 중..."
+      address: {
+        city: "",
+        city_district: ""
+      }
     },
     error: null
   });
@@ -38,7 +47,11 @@ export function useLocation() {
         const data = await response.json();
         
         // 행정동까지만 표시 (한국어 주소 체계)
-        let address = "알 수 없는 위치";
+        let addressData: AddressData = {
+          city: "알 수 없는 위치",
+          city_district: ""
+        };
+        
         console.log("위치 데이터:", data);
         
         if (data.address) {
@@ -46,15 +59,10 @@ export function useLocation() {
           const city = data.address.city || data.address.town || data.address.county || "";
           const district = data.address.suburb || data.address.neighbourhood || data.address.quarter || "";
           
-          if (city && district) {
-            address = `${city} ${district}`;
-          } else if (city) {
-            address = city;
-          } else if (data.display_name) {
-            // 대체 주소 표시 (더 간단하게)
-            const parts = data.display_name.split(',');
-            address = parts.length > 1 ? parts.slice(0, 2).join(' ') : parts[0];
-          }
+          addressData = {
+            city: city || "알 수 없는 위치",
+            city_district: district || ""
+          };
         }
         
         setLocationState({
@@ -62,7 +70,7 @@ export function useLocation() {
           location: {
             latitude: lat,
             longitude: lng,
-            address
+            address: addressData
           },
           error: null
         });
@@ -73,7 +81,10 @@ export function useLocation() {
           loading: false,
           location: {
             ...prev.location,
-            address: "위치 확인 불가"
+            address: {
+              city: "위치 확인 불가",
+              city_district: ""
+            }
           }
         }));
       }
