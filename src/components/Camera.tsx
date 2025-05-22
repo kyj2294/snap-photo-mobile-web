@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Camera as CameraIcon } from "lucide-react";
 import { useCamera } from "@/hooks/useCamera";
@@ -7,6 +8,7 @@ import CameraControls from "./CameraControls";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+
 const Camera = () => {
   const [appLoading, setAppLoading] = useState(true);
   const {
@@ -30,7 +32,9 @@ const Camera = () => {
 
   // 앱 초기 로딩 상태 관리
   useEffect(() => {
+    console.log("앱 초기화 로딩 시작");
     const timer = setTimeout(() => {
+      console.log("앱 로딩 완료");
       setAppLoading(false);
     }, 2000);
     return () => clearTimeout(timer);
@@ -110,9 +114,19 @@ const Camera = () => {
         </div>
       </div>;
   }
+
   return <div className="flex flex-col items-center w-full max-w-md mx-auto">
       {/* 모델 로드 실패 시 사용자에게 알림 표시 */}
-      {modelLoadAttempted && !modelLoading && !prediction}
+      {modelLoadAttempted && !modelLoading && !prediction && (
+        <Alert className="mb-4 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800/30">
+          <InfoIcon className="h-4 w-4" />
+          <AlertTitle>안내</AlertTitle>
+          <AlertDescription>
+            이미지 인식 모델 로드에 문제가 있을 수 있습니다.
+            카메라로 사진을 촬영한 후 분석하기 버튼을 눌러주세요.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="relative w-full aspect-[3/4] bg-black rounded-xl overflow-hidden mb-6 shadow-lg border border-white/10">
         {!capturedImage ? <>
@@ -141,7 +155,9 @@ const Camera = () => {
       <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
         {modelLoading && <p>모델을 로드하는 중입니다...</p>}
         {!modelLoading && modelLoadAttempted && <p>모델이 준비되었습니다.</p>}
+        {!modelLoading && !modelLoadAttempted && <p>모델 로드가 시작되지 않았습니다. 카메라를 시작하세요.</p>}
       </div>
     </div>;
 };
+
 export default Camera;

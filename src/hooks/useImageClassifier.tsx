@@ -8,7 +8,7 @@ export interface Prediction {
   probability: number;
 }
 
-// 모델 URL을 절대 경로로 변경 (배포 환경 고려)
+// 모델 URL을 절대 경로로 명확하게 설정
 const MODEL_URL = "/model/model.json";
 const METADATA_URL = "/model/metadata.json";
 
@@ -58,9 +58,9 @@ export function useImageClassifier() {
           throw fetchError;
         }
         
-        // 모델 로드 타임아웃 설정 - 20초 후에 실패로 간주
+        // 모델 로드 타임아웃 설정 - 15초 후에 실패로 간주 (배포 환경에서 더 짧게 설정)
         const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error("모델 로드 타임아웃")), 20000);
+          setTimeout(() => reject(new Error("모델 로드 타임아웃")), 15000);
         });
         
         // 모델 로딩 시도
@@ -76,16 +76,18 @@ export function useImageClassifier() {
         toast({
           title: "모델 로드 완료",
           description: "이미지 분류 모델이 성공적으로 로드되었습니다.",
+          variant: "default"
         });
       } catch (error) {
         console.error("Error loading model:", error);
         
         // 모델 로드 실패 시 사용자에게 알림
-        if (modelLoadAttempts < 3) { // 최대 3번까지 시도
+        if (modelLoadAttempts < 2) { // 최대 2번까지 시도 (배포 환경에서 시도 횟수 줄임)
           setModelLoadAttempts(prev => prev + 1);
           toast({
             title: "모델 로드 재시도 중",
             description: "모델 로드에 실패했습니다. 다시 시도합니다.",
+            variant: "default" // "warning" 대신 "default" 사용
           });
           
           // 재시도 전 약간의 지연 시간 설정
@@ -94,7 +96,7 @@ export function useImageClassifier() {
           toast({
             title: "모델 로드 오류",
             description: "이미지 분류 모델을 불러오는데 실패했습니다. 모델 없이 진행합니다.",
-            variant: "destructive",
+            variant: "destructive"
           });
         }
       } finally {
@@ -118,7 +120,7 @@ export function useImageClassifier() {
       toast({
         title: "모델이 로드되지 않음",
         description: "이미지 분류 모델이 아직 준비되지 않았습니다. 모델 없이 진행합니다.",
-        variant: "default",
+        variant: "default"
       });
       // 모델이 없어도 기본 UI 흐름은 유지되도록 함
       return null;
@@ -128,7 +130,7 @@ export function useImageClassifier() {
       toast({
         title: "분류 오류",
         description: "이미지를 찾을 수 없습니다.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return null;
     }
@@ -152,7 +154,7 @@ export function useImageClassifier() {
       toast({
         title: "분류 오류",
         description: "이미지 분류 중 오류가 발생했습니다.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return null;
     } finally {
