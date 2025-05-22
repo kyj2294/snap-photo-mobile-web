@@ -12,37 +12,40 @@ import Rewards from "./pages/Rewards";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
-// QueryClient를 컴포넌트 외부에서 명시적으로 생성
+// QueryClient 초기화 방식 개선
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: false,
-      refetchOnWindowFocus: false
+      retry: 1, // 한 번 재시도
+      refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5분
     }
   }
 });
 
-// 함수형 컴포넌트로 명확하게 정의
+// 함수형 컴포넌트 명확하게 정의
 const App: React.FC = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/mypage" element={<MyPage />} />
-              <Route path="/activity" element={<ActivityLog />} />
-              <Route path="/rewards" element={<Rewards />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <React.Fragment>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/mypage" element={<MyPage />} />
+                <Route path="/activity" element={<ActivityLog />} />
+                <Route path="/rewards" element={<Rewards />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </React.Fragment>
   );
 };
 
