@@ -19,6 +19,7 @@ export function useImageClassifier() {
   const [prediction, setPrediction] = useState<Prediction[] | null>(null);
   const [modelLoadAttempted, setModelLoadAttempted] = useState(false);
   const [modelLoadAttempts, setModelLoadAttempts] = useState(0);
+  const [modelLoadError, setModelLoadError] = useState<string | null>(null);
   const { toast } = useToast();
 
   // 모델 로드하기
@@ -32,6 +33,20 @@ export function useImageClassifier() {
       try {
         setModelLoading(true);
         setModelLoadAttempted(true);
+        setModelLoadError(null);
+        
+        console.log("모델 로드 시도 시작...");
+        // 모델 로드 시도 전에 먼저 메타데이터 파일의 존재 확인
+        const metadataResponse = await fetch(METADATA_URL);
+        if (!metadataResponse.ok) {
+          throw new Error(`메타데이터 파일을 찾을 수 없습니다: ${metadataResponse.status}`);
+        }
+        
+        // 모델 파일의 존재 확인
+        const modelResponse = await fetch(MODEL_URL);
+        if (!modelResponse.ok) {
+          throw new Error(`모델 파일을 찾을 수 없습니다: ${modelResponse.status}`);
+        }
         
         // 모델 로드 시도
         const loadedModel = await tmImage.load(MODEL_URL, METADATA_URL);
@@ -45,18 +60,20 @@ export function useImageClassifier() {
           variant: "default"
         });
       } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
         console.error("Error loading model:", error);
+        setModelLoadError(errorMessage);
         
         // 모델 로드 실패 시 사용자에게 알림
         if (modelLoadAttempts < 2) { // 최대 2번까지 시도 (배포 환경에서 시도 횟수 줄임)
           setModelLoadAttempts(prev => prev + 1);
           toast({
             title: "모델 로드 재시도 중",
-            description: "모델 로드에 실패했습니다. 다시 시도합니다.",
+            description: `모델 로드에 실패했습니다. 다시 시도합니다. (${errorMessage})`,
             variant: "default"
           });
           
-          // 재시도 전 약간의 지연 시간 설정
+          // 재시도 전에 약간의 지연 시간 설정
           setTimeout(loadModel, 2000);
         } else {
           toast({
@@ -134,6 +151,7 @@ export function useImageClassifier() {
       setModel(null);
       setModelLoadAttempted(false);
       setModelLoadAttempts(0);
+      setModelLoadError(null);
       // 모델 로드는 useEffect에서 자동으로 시작됨
     }
   };
@@ -142,6 +160,7 @@ export function useImageClassifier() {
     model,
     modelLoading,
     modelLoadAttempted,
+    modelLoadError,
     predicting,
     prediction,
     setPrediction,
