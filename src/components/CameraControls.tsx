@@ -98,24 +98,20 @@ const CameraControls: React.FC<CameraControlsProps> = ({
             다시 찍기
           </Button>
           
-          <div className="grid grid-cols-2 gap-2">
-            <Button 
-              className="h-12 bg-green-600 hover:bg-green-700"
-              onClick={checkPoints}
-              disabled={isCheckingPoints}
-            >
-              {isCheckingPoints ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <>
-                  <Search className="h-4 w-4" />
-                  <span className="ml-1">포인트 조회</span>
-                </>
-              )}
-            </Button>
-            
-            
-          </div>
+          <Button 
+            className="h-12 flex-1 bg-green-600 hover:bg-green-700"
+            onClick={checkPoints}
+            disabled={isCheckingPoints}
+          >
+            {isCheckingPoints ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                <Search className="mr-2 h-4 w-4" />
+                포인트 조회
+              </>
+            )}
+          </Button>
         </div>;
     }
 
