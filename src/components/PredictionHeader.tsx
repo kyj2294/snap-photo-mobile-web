@@ -25,14 +25,14 @@ const PredictionHeader: React.FC<PredictionHeaderProps> = ({
   hasPoint
 }) => {
   return (
-    <div className="p-4 bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 text-white">
+    <div className="p-4 bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 text-white rounded-t-lg shadow-md">
       <h2 className="text-xl font-bold text-center mb-2">분석 결과</h2>
       <div className="flex items-center justify-between">
         <div className="text-2xl font-bold">{className}</div>
         <div className="text-xl font-semibold">{Math.round(probability * 100)}%</div>
       </div>
       
-      {/* 포인트 정보 표시 */}
+      {/* 포인트 정보 표시 - 모바일 최적화 */}
       {pointInfo && (
         <div className="mt-2 p-2 bg-white/20 rounded-md flex items-center justify-between">
           <div className="flex items-center">
