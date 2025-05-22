@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: "/", // 절대 경로로 설정
+  base: "./", // 상대 경로로 수정
   build: {
     outDir: "dist",
     assetsDir: "assets",

@@ -8,9 +8,9 @@ export interface Prediction {
   probability: number;
 }
 
-// 모델 URL을 절대 경로로 명확하게 설정
-const MODEL_URL = "/model/model.json";
-const METADATA_URL = "/model/metadata.json";
+// 모델 URL을 상대 경로로 수정
+const MODEL_URL = "./model/model.json";
+const METADATA_URL = "./model/metadata.json";
 
 export function useImageClassifier() {
   const [model, setModel] = useState<tmImage.CustomMobileNet | null>(null);
