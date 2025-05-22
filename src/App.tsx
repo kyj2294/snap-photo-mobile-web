@@ -1,5 +1,4 @@
 
-import React from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,41 +11,27 @@ import Rewards from "./pages/Rewards";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
-// QueryClient 초기화 방식 개선
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1, // 한 번 재시도
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5분
-    }
-  }
-});
+const queryClient = new QueryClient();
 
-// 함수형 컴포넌트 명확하게 정의
-const App: React.FC = () => {
-  return (
-    <>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/mypage" element={<MyPage />} />
-                <Route path="/activity" element={<ActivityLog />} />
-                <Route path="/rewards" element={<Rewards />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </ThemeProvider>
-      </QueryClientProvider>
-    </>
-  );
-};
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/mypage" element={<MyPage />} />
+            <Route path="/activity" element={<ActivityLog />} />
+            <Route path="/rewards" element={<Rewards />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
+);
 
 export default App;
