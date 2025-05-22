@@ -28,14 +28,15 @@ export default defineConfig(({ mode }) => ({
         assetFileNames: 'assets/[name].[hash].[ext]'
       },
     },
-    // 배포 환경에서 소스맵 비활성화
-    sourcemap: false,
+    // 배포 환경에서 소스맵 설정 (개발 모드에서는 활성화)
+    sourcemap: mode === 'development',
     // minify 옵션 추가
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,
-        drop_debugger: true
+        // 개발 모드에서는 console을 유지
+        drop_console: mode !== 'development',
+        drop_debugger: mode !== 'development'
       }
     }
   },

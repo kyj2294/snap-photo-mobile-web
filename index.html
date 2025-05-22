@@ -13,8 +13,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
-    <!-- 배포 환경을 위한 보안 정책 설정 -->
-    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' blob:; script-src * 'self' 'unsafe-inline' 'unsafe-eval'; style-src * 'self' 'unsafe-inline'; img-src * 'self' data: blob: content:; connect-src * 'self' https://nominatim.openstreetmap.org ws: wss:; font-src * 'self'; media-src * 'self' blob:; worker-src * blob: 'self';">
+    <!-- 배포 환경을 위한 보안 정책 설정 - Tensorflow.js 작동을 위한 설정 추가 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' blob: data:; script-src * 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src * 'self' 'unsafe-inline'; img-src * 'self' data: blob: content:; connect-src * 'self' https://nominatim.openstreetmap.org https://*.tensorflow.org ws: wss:; font-src * 'self'; media-src * 'self' blob:; worker-src * blob: 'self';">
 
     <!-- 오픈 그래프 -->
     <meta property="og:title" content="RecycLens - 이미지 인식 재활용 가이드" />
