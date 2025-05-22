@@ -1,11 +1,10 @@
+
 import React, { useState, useEffect } from "react";
 import { Prediction } from "@/hooks/useImageClassifier";
 import { MapPin, Building, Phone, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
 interface PredictionResultsProps {
   prediction: Prediction[] | null;
 }
@@ -217,7 +216,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
           </div>
         </div>
         
-        {/* 재활용 센터 정보 추가 - ScrollArea 적용 */}
+        {/* 재활용 센터 정보 추가 */}
         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-100 dark:border-blue-800/30">
           <div className="flex items-center gap-2 mb-2">
             <Building className="text-blue-600 dark:text-blue-400 w-5 h-5" />
@@ -226,39 +225,36 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
             </h3>
           </div>
           
-          {isLoading ? <p className="text-gray-600 dark:text-gray-400 text-center py-2">재활용 센터 정보를 불러오는 중...</p> : recyclingCenters.length > 0 ? 
-            <ScrollArea className="h-[300px] pr-4">
-              <ul className="space-y-3">
-                {recyclingCenters.map(center => <li key={center.objID} className="border-b border-gray-200 dark:border-gray-700 pb-2 last:border-0">
-                    <div className="font-semibold text-lg text-green-700 dark:text-green-500 cursor-pointer hover:text-green-600 hover:underline" onClick={() => center.positnRdnmAddr && openGoogleMaps(center.positnNm + ' ' + center.positnRdnmAddr)}>
-                      {center.positnNm || "이름 없는 센터"} 
-                      {center.objID === selectedObjID && <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">정확히 일치</span>}
-                      {isItemPen && <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">볼펜 전문 수거</span>}
-                    </div>
-                    
-                    {center.positnRdnmAddr && <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center mt-1">
-                        <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0 cursor-pointer hover:text-blue-500" onClick={() => openGoogleMaps(center.positnRdnmAddr || '')} />
-                        <span className="cursor-pointer hover:text-blue-500 hover:underline" onClick={() => openGoogleMaps(center.positnRdnmAddr || '')}>
-                          {center.positnRdnmAddr}
-                        </span>
-                      </div>}
-                    
-                    {center.bscTelnoCn && <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5 flex items-center">
-                        <Phone className="w-3.5 h-3.5 mr-1 flex-shrink-0 text-blue-600" />
-                        <span className="cursor-pointer hover:text-blue-600 hover:underline" onClick={() => makePhoneCall(center.bscTelnoCn || '')}>
-                          {center.bscTelnoCn}
-                        </span>
-                      </div>}
-                    
-                    {center.prkMthdExpln && <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
-                        🚗 <span className="font-medium">주차:</span> {center.prkMthdExpln}
-                      </div>}
-                    
-                    {/* 영업시간 정보 추가 */}
-                    {renderBusinessHours(center)}
-                  </li>)}
-              </ul>
-            </ScrollArea> : <p className="text-gray-600 dark:text-gray-400 text-center py-2">
+          {isLoading ? <p className="text-gray-600 dark:text-gray-400 text-center py-2">재활용 센터 정보를 불러오는 중...</p> : recyclingCenters.length > 0 ? <ul className="space-y-3">
+              {recyclingCenters.map(center => <li key={center.objID} className="border-b border-gray-200 dark:border-gray-700 pb-2 last:border-0">
+                  <div className="font-semibold text-lg text-green-700 dark:text-green-500 cursor-pointer hover:text-green-600 hover:underline" onClick={() => center.positnRdnmAddr && openGoogleMaps(center.positnNm + ' ' + center.positnRdnmAddr)}>
+                    {center.positnNm || "이름 없는 센터"} 
+                    {center.objID === selectedObjID && <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">정확히 일치</span>}
+                    {isItemPen && <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">볼펜 전문 수거</span>}
+                  </div>
+                  
+                  {center.positnRdnmAddr && <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center mt-1">
+                      <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0 cursor-pointer hover:text-blue-500" onClick={() => openGoogleMaps(center.positnRdnmAddr || '')} />
+                      <span className="cursor-pointer hover:text-blue-500 hover:underline" onClick={() => openGoogleMaps(center.positnRdnmAddr || '')}>
+                        {center.positnRdnmAddr}
+                      </span>
+                    </div>}
+                  
+                  {center.bscTelnoCn && <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5 flex items-center">
+                      <Phone className="w-3.5 h-3.5 mr-1 flex-shrink-0 text-blue-600" />
+                      <span className="cursor-pointer hover:text-blue-600 hover:underline" onClick={() => makePhoneCall(center.bscTelnoCn || '')}>
+                        {center.bscTelnoCn}
+                      </span>
+                    </div>}
+                  
+                  {center.prkMthdExpln && <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
+                      🚗 <span className="font-medium">주차:</span> {center.prkMthdExpln}
+                    </div>}
+                  
+                  {/* 영업시간 정보 추가 */}
+                  {renderBusinessHours(center)}
+                </li>)}
+            </ul> : <p className="text-gray-600 dark:text-gray-400 text-center py-2">
               '{topPrediction.className}'에 대한 재활용 센터 정보가 없습니다.
             </p>}
         </div>
