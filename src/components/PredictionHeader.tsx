@@ -2,10 +2,11 @@
 import React from "react";
 import { Coins } from "lucide-react";
 
+// PointInfo 타입을 일관되게 정의 (centerPoint를 선택적으로 변경)
 interface PointInfo {
   objName: string;
   amount: number | null;
-  centerPoint: number | null;
+  centerPoint?: number | null;  // ? 추가하여 선택적으로 변경
 }
 
 interface PredictionHeaderProps {

@@ -53,8 +53,15 @@ export type Database = {
       }
       minwon_voice: {
         Row: {
+          created_at: string | null
+          department: string | null
           id: number
+          location: string | null
           "PDF 파일": string | null
+          request: string | null
+          status: string | null
+          topic: string | null
+          updated_at: string | null
           공개여부: string | null
           내용: string | null
           이름: string | null
@@ -63,8 +70,15 @@ export type Database = {
           제목: string | null
         }
         Insert: {
+          created_at?: string | null
+          department?: string | null
           id?: number
+          location?: string | null
           "PDF 파일"?: string | null
+          request?: string | null
+          status?: string | null
+          topic?: string | null
+          updated_at?: string | null
           공개여부?: string | null
           내용?: string | null
           이름?: string | null
@@ -73,8 +87,15 @@ export type Database = {
           제목?: string | null
         }
         Update: {
+          created_at?: string | null
+          department?: string | null
           id?: number
+          location?: string | null
           "PDF 파일"?: string | null
+          request?: string | null
+          status?: string | null
+          topic?: string | null
+          updated_at?: string | null
           공개여부?: string | null
           내용?: string | null
           이름?: string | null

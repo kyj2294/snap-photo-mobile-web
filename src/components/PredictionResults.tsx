@@ -30,11 +30,11 @@ interface RecyclingCenter {
   point?: number | null;
 }
 
-// 포인트 정보를 위한 타입 정의
+// 포인트 정보를 위한 타입 정의 - 일관되게 변경
 interface PointInfo {
   objName: string;
   amount: number | null;
-  centerPoint?: number | null;
+  centerPoint?: number | null;  // 선택적으로 변경
 }
 
 const PredictionResults: React.FC<PredictionResultsProps> = ({
@@ -203,7 +203,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
           <PointInfoTable 
             objName={pointInfo.objName}
             amount={pointInfo.amount}
-            centerPoint={pointInfo.centerPoint || null}
+            centerPoint={pointInfo.centerPoint}
             totalPoint={totalPoint}
             hasPoint={hasPoint}
           />
