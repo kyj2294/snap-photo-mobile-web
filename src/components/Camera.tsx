@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Camera as CameraIcon } from "lucide-react";
 import { useCamera } from "@/hooks/useCamera";
 import { useImageClassifier } from "@/hooks/useImageClassifier";
@@ -20,11 +20,19 @@ const Camera = () => {
   
   const {
     modelLoading,
+    modelLoadAttempted,
     predicting,
     prediction,
     setPrediction,
     classifyImage
   } = useImageClassifier();
+
+  // 모델 로딩 상태 로깅
+  useEffect(() => {
+    console.log("Camera 컴포넌트 렌더링");
+    console.log("모델 로딩 상태:", modelLoading);
+    console.log("모델 로드 시도 여부:", modelLoadAttempted);
+  }, [modelLoading, modelLoadAttempted]);
 
   const handleClassifyImage = async () => {
     if (canvasRef.current) {
@@ -81,6 +89,12 @@ const Camera = () => {
           }}
           onClassifyImage={handleClassifyImage}
         />
+      </div>
+      
+      {/* 모델 로딩 상태에 대한 디버그 정보 추가 */}
+      <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+        {modelLoading && <p>모델을 로드하는 중입니다...</p>}
+        {!modelLoading && modelLoadAttempted && <p>모델이 준비되었습니다.</p>}
       </div>
     </div>
   );

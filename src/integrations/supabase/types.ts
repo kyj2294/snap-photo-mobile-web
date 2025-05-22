@@ -188,6 +188,141 @@ export type Database = {
         }
         Relationships: []
       }
+      QusetKey: {
+        Row: {
+          llm_api_key_vl: string | null
+          LLM_cd: string
+          regsiter_dt: string
+          seq: number
+          Use_yn: boolean | null
+        }
+        Insert: {
+          llm_api_key_vl?: string | null
+          LLM_cd: string
+          regsiter_dt: string
+          seq?: number
+          Use_yn?: boolean | null
+        }
+        Update: {
+          llm_api_key_vl?: string | null
+          LLM_cd?: string
+          regsiter_dt?: string
+          seq?: number
+          Use_yn?: boolean | null
+        }
+        Relationships: []
+      }
+      renewableCenter: {
+        Row: {
+          bscTelnoCn: string | null
+          clctItemCn: string | null
+          comRelSrwrdListCn: string | null
+          dyoffBgndeCn: string | null
+          dyoffEnddtCn: string | null
+          dyoffRsnExpln: string | null
+          etcMttrCn: string | null
+          friSalsHrExplnCn: string | null
+          indivRelSrchListCn: string | null
+          indivTelnoCn: string | null
+          lhldyDyoffCn: string | null
+          lhldySalsHrExplnCn: string | null
+          lnkgHmpgUrlAddr: string | null
+          monSalsHrExplnCn: string | null
+          objID: string | null
+          point: number | null
+          positnCnvncFcltSrvcExpln: string | null
+          positnIntdcCn: string | null
+          positnLotnoAddr: string | null
+          positnNm: string | null
+          positnPstnAddExpln: string | null
+          positnPstnLat: number | null
+          positnPstnLot: number | null
+          positnRdnmAddr: string | null
+          positnRgnNm: string | null
+          prkMthdExpln: string | null
+          rprsTelnoCn: string | null
+          satSalsHrExplnCn: string | null
+          sunSalsHrExplnCn: string | null
+          telnoExpln: string | null
+          thurSalsHrExplnCn: string | null
+          tmprLhldyCn: string | null
+          tuesSalsHrExplnCn: string | null
+          wedSalsHrExplnCn: string | null
+        }
+        Insert: {
+          bscTelnoCn?: string | null
+          clctItemCn?: string | null
+          comRelSrwrdListCn?: string | null
+          dyoffBgndeCn?: string | null
+          dyoffEnddtCn?: string | null
+          dyoffRsnExpln?: string | null
+          etcMttrCn?: string | null
+          friSalsHrExplnCn?: string | null
+          indivRelSrchListCn?: string | null
+          indivTelnoCn?: string | null
+          lhldyDyoffCn?: string | null
+          lhldySalsHrExplnCn?: string | null
+          lnkgHmpgUrlAddr?: string | null
+          monSalsHrExplnCn?: string | null
+          objID?: string | null
+          point?: number | null
+          positnCnvncFcltSrvcExpln?: string | null
+          positnIntdcCn?: string | null
+          positnLotnoAddr?: string | null
+          positnNm?: string | null
+          positnPstnAddExpln?: string | null
+          positnPstnLat?: number | null
+          positnPstnLot?: number | null
+          positnRdnmAddr?: string | null
+          positnRgnNm?: string | null
+          prkMthdExpln?: string | null
+          rprsTelnoCn?: string | null
+          satSalsHrExplnCn?: string | null
+          sunSalsHrExplnCn?: string | null
+          telnoExpln?: string | null
+          thurSalsHrExplnCn?: string | null
+          tmprLhldyCn?: string | null
+          tuesSalsHrExplnCn?: string | null
+          wedSalsHrExplnCn?: string | null
+        }
+        Update: {
+          bscTelnoCn?: string | null
+          clctItemCn?: string | null
+          comRelSrwrdListCn?: string | null
+          dyoffBgndeCn?: string | null
+          dyoffEnddtCn?: string | null
+          dyoffRsnExpln?: string | null
+          etcMttrCn?: string | null
+          friSalsHrExplnCn?: string | null
+          indivRelSrchListCn?: string | null
+          indivTelnoCn?: string | null
+          lhldyDyoffCn?: string | null
+          lhldySalsHrExplnCn?: string | null
+          lnkgHmpgUrlAddr?: string | null
+          monSalsHrExplnCn?: string | null
+          objID?: string | null
+          point?: number | null
+          positnCnvncFcltSrvcExpln?: string | null
+          positnIntdcCn?: string | null
+          positnLotnoAddr?: string | null
+          positnNm?: string | null
+          positnPstnAddExpln?: string | null
+          positnPstnLat?: number | null
+          positnPstnLot?: number | null
+          positnRdnmAddr?: string | null
+          positnRgnNm?: string | null
+          prkMthdExpln?: string | null
+          rprsTelnoCn?: string | null
+          satSalsHrExplnCn?: string | null
+          sunSalsHrExplnCn?: string | null
+          telnoExpln?: string | null
+          thurSalsHrExplnCn?: string | null
+          tmprLhldyCn?: string | null
+          tuesSalsHrExplnCn?: string | null
+          wedSalsHrExplnCn?: string | null
+        }
+        Relationships: []
+      }
       renewalcenter: {
         Row: {
           bscTelnoCn: string | null
