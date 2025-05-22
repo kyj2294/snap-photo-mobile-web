@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Prediction } from "@/hooks/useImageClassifier";
 import { MapPin, Building, Phone, Clock, Coins } from "lucide-react";
@@ -226,41 +227,6 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
   // 가장 높은 확률의 예측 결과
   const topPrediction = sortedPredictions[0];
 
-  // 분리수거 가이드 정보 (실제로는 DB나 API에서 가져올 수 있음)
-  const recyclingGuides: {
-    [key: string]: {
-      type: string;
-      method: string;
-      tips: string[];
-    };
-  } = {
-    "커피컵": {
-      type: "일반쓰레기",
-      method: "음식물 잔여물 제거 필수",
-      tips: ["커피컵은 내부에 알루미늄 코팅이 되어 있어 재활용이 어렵습니다", "깨끗이 씻어서 버리면 환경오염을 줄일 수 있습니다"]
-    },
-    "종이컵": {
-      type: "종이류",
-      method: "깨끗이 씻어서 분리수거함에 배출",
-      tips: ["내용물을 비우고 물로 헹궈 배출하세요", "종이컵 안에 이물질이 없어야 재활용이 가능합니다"]
-    },
-    "볼펜": {
-      type: "플라스틱 및 금속 혼합",
-      method: "분해하여 재질별로 분리배출",
-      tips: ["플라스틱 외부는 플라스틱류로, 금속 부품은 고철류로 분리해주세요", "잉크는 완전히 제거한 후 배출하는 것이 좋습니다", "볼펜 전용 수거함이 있는 경우 이용하면 더욱 효과적입니다"]
-    }
-  };
-
-  // 기본 가이드 정보
-  const defaultGuide = {
-    type: "알 수 없음",
-    method: "지역 분리수거 지침을 확인하세요",
-    tips: ["정확한 분리배출 방법은 지자체 홈페이지에서 확인할 수 있습니다"]
-  };
-
-  // 현재 예측 결과가 "볼펜"인지 확인
-  const isItemPen = topPrediction.className === "볼펜";
-
   // 포인트 정보 계산
   const totalPoint = pointInfo ? (pointInfo.amount !== null ? pointInfo.amount : 0) + 
                                (pointInfo.centerPoint !== null ? pointInfo.centerPoint : 0) : 0;
@@ -294,7 +260,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
           <div className="flex items-center gap-2 mb-2">
             <Building className="text-blue-600 dark:text-blue-400 w-5 h-5" />
             <h3 className="font-semibold">
-              {isItemPen ? "볼펜 수거 가능 재활용 센터" : "인근 재활용 센터"}
+              {topPrediction.className === "볼펜" ? "볼펜 수거 가능 재활용 센터" : "인근 재활용 센터"}
             </h3>
           </div>
           
@@ -303,7 +269,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
                   <div className="font-semibold text-lg text-green-700 dark:text-green-500 cursor-pointer hover:text-green-600 hover:underline" onClick={() => center.positnRdnmAddr && openGoogleMaps(center.positnNm + ' ' + center.positnRdnmAddr)}>
                     {center.positnNm || "이름 없는 센터"} 
                     {center.objID === selectedObjID && <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">정확히 일치</span>}
-                    {isItemPen && <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">볼펜 전문 수거</span>}
+                    {topPrediction.className === "볼펜" && <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">볼펜 전문 수거</span>}
                   </div>
                   
                   {/* 센터 포인트 정보 표시 */}
@@ -374,29 +340,6 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
         )}
       </div>
     </div>;
-};
-
-// 구글 맵에서 위치 보기 기능
-const openGoogleMaps = (address: string) => {
-  if (!address) return;
-
-  // 주소를 URL 인코딩하여 구글 맵 URL 생성
-  const encodedAddress = encodeURIComponent(address);
-  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
-
-  // 새 탭에서 구글 맵 열기
-  window.open(googleMapsUrl, '_blank', 'noopener,noreferrer');
-};
-
-// 전화 걸기 기능 추가
-const makePhoneCall = (phoneNumber: string) => {
-  if (!phoneNumber) return;
-
-  // 전화번호에서 괄호와 하이픈 등 특수문자 제거
-  const cleanPhoneNumber = phoneNumber.replace(/[^\d+]/g, '');
-
-  // tel: 프로토콜을 사용하여 전화 걸기
-  window.location.href = `tel:${cleanPhoneNumber}`;
 };
 
 export default PredictionResults;

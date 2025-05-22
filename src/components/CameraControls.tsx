@@ -81,7 +81,7 @@ const CameraControls: React.FC<CameraControlsProps> = ({
         
         toast({
           title: "포인트 조회 결과",
-          description: `${topPrediction.className}: ${(objData?.amount || centerData?.point || 0)} 포인트`,
+          description: `${topPrediction.className}: ${(objData?.amount || 0) + (centerData?.point || 0)} 포인트`,
           variant: "default"
         });
       }
