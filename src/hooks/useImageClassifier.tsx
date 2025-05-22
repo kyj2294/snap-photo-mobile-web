@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import * as tmImage from "@teachablemachine/image";
 import { useToast } from "@/hooks/use-toast";
@@ -8,7 +7,7 @@ export interface Prediction {
   probability: number;
 }
 
-// 모델 URL을 상대 경로로 수정
+// 모델 URL을 상대 경로로 수정 (기본 경로로부터의 상대 경로)
 const MODEL_URL = "./model/model.json";
 const METADATA_URL = "./model/metadata.json";
 
@@ -35,15 +34,27 @@ export function useImageClassifier() {
         setModelLoadAttempted(true);
         setModelLoadError(null);
         
-        console.log("모델 로드 시도 시작...");
+        console.log("모델 로드 시도 시작...", window.location.href);
+        // 전체 URL 경로 구성
+        const baseUrl = window.location.href.split('#')[0];
+        const basePath = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
+        
+        console.log("기본 URL:", basePath);
+        console.log("시도할 모델 URL:", new URL(MODEL_URL, basePath).href);
+        console.log("시도할 메타데이터 URL:", new URL(METADATA_URL, basePath).href);
+        
         // 모델 로드 시도 전에 먼저 메타데이터 파일의 존재 확인
         const metadataResponse = await fetch(METADATA_URL);
+        console.log("메타데이터 응답 상태:", metadataResponse.status);
+        
         if (!metadataResponse.ok) {
           throw new Error(`메타데이터 파일을 찾을 수 없습니다: ${metadataResponse.status}`);
         }
         
         // 모델 파일의 존재 확인
         const modelResponse = await fetch(MODEL_URL);
+        console.log("모델 응답 상태:", modelResponse.status);
+        
         if (!modelResponse.ok) {
           throw new Error(`모델 파일을 찾을 수 없습니다: ${modelResponse.status}`);
         }

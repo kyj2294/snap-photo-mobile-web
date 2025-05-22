@@ -1,9 +1,11 @@
+
 import React, { useCallback } from 'react';
 import Camera from '@/components/Camera';
 import ThemeToggle from '@/components/ThemeToggle';
 import NavigationBar from '@/components/NavigationBar';
 import { MapPin, ImageIcon } from 'lucide-react';
 import { useLocation } from '@/hooks/useLocation';
+
 const Index = () => {
   const {
     location,
@@ -28,6 +30,7 @@ const Index = () => {
       }
     };
   }, []);
+  
   return <div className="min-h-screen flex flex-col dark:bg-gray-900 bg-gray-100 transition-colors duration-300 pb-20">
       <header className="bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-600 dark:to-emerald-700 text-white p-6 relative">
         <div className="absolute top-4 right-4">
@@ -37,6 +40,12 @@ const Index = () => {
         <p className="text-sm opacity-90 text-center mt-1">이미지 인식 기반 재활용 가이드</p>
       
         {/* 위치 정보 표시 */}
+        {location && (
+          <div className="mt-3 flex items-center justify-center text-xs opacity-75">
+            <MapPin className="w-3 h-3 mr-1" />
+            <span>{location.address || '위치 정보 사용 가능'}</span>
+          </div>
+        )}
         
       </header>
       
@@ -56,4 +65,5 @@ const Index = () => {
       <NavigationBar />
     </div>;
 };
+
 export default Index;

@@ -11,7 +11,21 @@ import Rewards from "./pages/Rewards";
 import NotFound from "./pages/NotFound";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
-const queryClient = new QueryClient();
+// 쿼리 클라이언트 설정 - 로깅 활성화
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+    },
+  },
+  logger: {
+    log: console.log,
+    warn: console.warn,
+    error: console.error,
+  }
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -20,14 +34,16 @@ const App = () => (
         <Toaster />
         <Sonner />
         <HashRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/mypage" element={<MyPage />} />
-            <Route path="/activity" element={<ActivityLog />} />
-            <Route path="/rewards" element={<Rewards />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <div id="app-container" className="app-container">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/mypage" element={<MyPage />} />
+              <Route path="/activity" element={<ActivityLog />} />
+              <Route path="/rewards" element={<Rewards />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
         </HashRouter>
       </TooltipProvider>
     </ThemeProvider>

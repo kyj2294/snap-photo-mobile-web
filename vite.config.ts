@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: "./", // 상대 경로로 수정
+  base: "./", // 상대 경로로 설정 유지
   build: {
     outDir: "dist",
     assetsDir: "assets",
@@ -34,11 +34,13 @@ export default defineConfig(({ mode }) => ({
     minify: 'terser',
     terserOptions: {
       compress: {
-        // 프로덕션 모드에서만 console 제거
-        drop_console: mode !== 'development',
-        drop_debugger: mode !== 'development'
+        // 프로덕션 모드에서도 console 유지 (디버깅 목적)
+        drop_console: false,
+        drop_debugger: false
       }
-    }
+    },
+    // 모든 형태의 코드가 지원되도록 설정 (IE11 제외)
+    target: 'es2015'
   },
   // public 폴더의 파일을 그대로 dist로 복사
   publicDir: 'public',
