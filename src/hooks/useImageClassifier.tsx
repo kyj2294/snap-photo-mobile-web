@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import * as tmImage from "@teachablemachine/image";
 import { useToast } from "@/hooks/use-toast";
 
@@ -14,15 +14,9 @@ export function useImageClassifier() {
   const [predicting, setPredicting] = useState(false);
   const [prediction, setPrediction] = useState<Prediction[] | null>(null);
   const { toast } = useToast();
-  const modelLoadAttempted = useRef(false);
 
   // Load the TeacherMachine model
   useEffect(() => {
-    // 모델 로드가 이미 시도되었는지 확인
-    if (modelLoadAttempted.current) return;
-    
-    modelLoadAttempted.current = true;
-    
     const loadModel = async () => {
       try {
         setModelLoading(true);
@@ -41,21 +35,8 @@ export function useImageClassifier() {
         const metadata = await metadataResponse.json();
         console.log("메타데이터 로드 완료:", metadata);
         
-        // 모델 로드 시도 - 최대 2번까지만 시도
-        let loadedModel = null;
-        let attempts = 0;
-        
-        while (!loadedModel && attempts < 2) {
-          try {
-            attempts++;
-            loadedModel = await tmImage.load(modelURL, metadataURL);
-          } catch (err) {
-            if (attempts >= 2) throw err;
-            // 잠시 대기 후 재시도
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-        }
-        
+        // 모델 로드 시도
+        const loadedModel = await tmImage.load(modelURL, metadataURL);
         console.log("모델 로드 완료!");
         
         setModel(loadedModel);
@@ -76,14 +57,10 @@ export function useImageClassifier() {
       }
     };
     
-    // 1초 후에 모델 로드 시작 (초기 렌더링이 안정화된 후)
-    const timer = setTimeout(() => {
-      loadModel();
-    }, 1000);
+    loadModel();
     
     // Clean up function
     return () => {
-      clearTimeout(timer);
       if (model) {
         // Clean up model if needed
       }
