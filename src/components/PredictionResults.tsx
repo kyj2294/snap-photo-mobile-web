@@ -19,6 +19,7 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
   const { pointInfo, totalPoint, hasPoint } = usePointInfo(prediction);
   const { recyclingCenters, isLoading, selectedObjID } = useRecyclingCenters(prediction);
 
+  // 예측 결과가 없으면 렌더링하지 않음
   if (!prediction) return null;
 
   // 확률 기준으로 내림차순 정렬
@@ -47,7 +48,6 @@ const PredictionResults: React.FC<PredictionResultsProps> = ({
           makePhoneCall={makePhoneCall}
         />
         
-        {/* 포인트 정보 테이블로 표시 (별도 섹션) */}
         {pointInfo && (
           <PointInfoTable 
             objName={pointInfo.objName}

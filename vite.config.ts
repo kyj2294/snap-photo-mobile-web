@@ -28,15 +28,15 @@ export default defineConfig(({ mode }) => ({
         assetFileNames: 'assets/[name].[hash].[ext]'
       },
     },
-    // 배포 환경에서 소스맵 설정 (개발 모드에서는 활성화)
-    sourcemap: mode === 'development',
+    // 프로덕션 모드에서 소스맵 비활성화 (배포 크기 최적화)
+    sourcemap: false,
     // minify 옵션 추가
     minify: 'terser',
     terserOptions: {
       compress: {
-        // 프로덕션 모드에서도 console 유지 (디버깅 목적)
-        drop_console: false,
-        drop_debugger: false
+        // 프로덕션 모드에서 console 제거 (배포 최적화)
+        drop_console: true,
+        drop_debugger: true
       }
     },
     // 모든 형태의 코드가 지원되도록 설정 (IE11 제외)
