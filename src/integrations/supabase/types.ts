@@ -54,6 +54,66 @@ export type Database = {
       minwon_voice: {
         Row: {
           created_at: string | null
+          deadline: string | null
+          department: string | null
+          id: number | null
+          location: string | null
+          "PDF 파일": string | null
+          request: string | null
+          status: string | null
+          tags: string[] | null
+          topic: string | null
+          updated_at: string | null
+          공개여부: string | null
+          내용: string | null
+          이름: string | null
+          이메일: string | null
+          전화번호: string | null
+          제목: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          deadline?: string | null
+          department?: string | null
+          id?: number | null
+          location?: string | null
+          "PDF 파일"?: string | null
+          request?: string | null
+          status?: string | null
+          tags?: string[] | null
+          topic?: string | null
+          updated_at?: string | null
+          공개여부?: string | null
+          내용?: string | null
+          이름?: string | null
+          이메일?: string | null
+          전화번호?: string | null
+          제목?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          deadline?: string | null
+          department?: string | null
+          id?: number | null
+          location?: string | null
+          "PDF 파일"?: string | null
+          request?: string | null
+          status?: string | null
+          tags?: string[] | null
+          topic?: string | null
+          updated_at?: string | null
+          공개여부?: string | null
+          내용?: string | null
+          이름?: string | null
+          이메일?: string | null
+          전화번호?: string | null
+          제목?: string | null
+        }
+        Relationships: []
+      }
+      minwon_voice3: {
+        Row: {
+          created_at: string | null
           department: string | null
           id: number
           location: string | null
